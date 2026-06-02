@@ -58,7 +58,7 @@ class ModelDef:
 
 NVIDIA_MODELS: list[ModelDef] = [
     ModelDef(
-        id="moonshotai/kimi-k2",
+        id="moonshotai/kimi-k2-instruct",
         name="Kimi K2.6",
         provider="nvidia",
         context=32_768,
@@ -402,7 +402,7 @@ MODEL_ALIASES: dict[str, str] = {
     "llama8b":     "meta/llama-3.1-8b-instruct",
     "nemotron":    "nvidia/llama-3.1-nemotron-70b-instruct",
     "qwencoder":   "qwen/qwen2.5-coder-32b-instruct",
-    "kimi":        "moonshotai/kimi-k2",
+    "kimi":        "moonshotai/kimi-k2-instruct",
     # Google
     "gemini-pro":  "gemini-1.5-pro",
     "gemini-flash":"gemini-2.0-flash",

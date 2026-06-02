@@ -579,7 +579,7 @@ def show_models_table(models: Optional[list[dict]] = None) -> None:
             "gemini-2.0-flash",
             "llama-3.3-70b-versatile",
             "deepseek-chat",
-            "moonshotai/kimi-k2"
+            "moonshotai/kimi-k2-instruct"
         }
         models = [m for m in all_mdls if m["id"] in primary_ids]
         if len(models) < 5:

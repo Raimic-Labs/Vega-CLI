@@ -7,7 +7,7 @@ Usage:
     provider = get_provider(
         provider_name = "nvidia",
         api_key       = "nvapi-...",
-        model         = "moonshotai/kimi-k2",
+        model         = "moonshotai/kimi-k2-instruct",
     )
     for chunk in provider.stream_with_retry(messages):
         print(chunk.text, end="", flush=True)

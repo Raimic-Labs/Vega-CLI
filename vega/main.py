@@ -225,7 +225,7 @@ def _handle_switch(session) -> None:
         ("google", "gemini-2.0-flash", "Gemini 2.0 Flash (Google)"),
         ("groq", "llama-3.3-70b-versatile", "Llama 3.3 70B (Groq)"),
         ("deepseek", "deepseek-chat", "DeepSeek-V3 (DeepSeek)"),
-        ("nvidia", "moonshotai/kimi-k2", "Kimi K2.6 (NVIDIA)"),
+        ("nvidia", "moonshotai/kimi-k2-instruct", "Kimi K2.6 (NVIDIA)"),
     ]
 
     console.print()

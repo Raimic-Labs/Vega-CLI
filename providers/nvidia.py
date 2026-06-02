@@ -43,7 +43,7 @@ from providers.base import (
 
 NVIDIA_BASE_URL   = "https://integrate.api.nvidia.com/v1"
 DEFAULT_MODEL     = "meta/llama-3.1-405b-instruct"
-KIMI_K2_MODEL     = "moonshotai/kimi-k2"       # Kimi-K2.6 on NVIDIA NIM
+KIMI_K2_MODEL     = "moonshotai/kimi-k2-instruct"       # Kimi-K2.6 on NVIDIA NIM
 CONNECT_TIMEOUT   = 10.0   # seconds for initial connection
 READ_TIMEOUT      = 120.0  # seconds for streaming reads
 
@@ -57,7 +57,7 @@ class NvidiaProvider(BaseProvider):
     NVIDIA NIM provider — wraps the OpenAI-compatible NIM endpoint.
 
     Usage:
-        provider = NvidiaProvider(api_key="nvapi-...", model="moonshotai/kimi-k2")
+        provider = NvidiaProvider(api_key="nvapi-...", model="moonshotai/kimi-k2-instruct")
         for chunk in provider.stream_with_retry(messages):
             print(chunk.text, end="", flush=True)
     """
