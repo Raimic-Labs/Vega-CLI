@@ -213,79 +213,316 @@ def _handle_connect(session) -> None:
             pass
 
 
-# ─────────────────────────────────────────────
-#  Extended slash commands (not in chat.py)
-# ─────────────────────────────────────────────
-
-def _handle_extended_commands(raw: str, session) -> bool:
-    """
-    Handle Vega-specific slash commands not covered by chat.py's loop.
-
-    Returns True if command was handled, False to pass through.
-    """
-    from vega.router import route, Intent
+def _handle_switch(session) -> None:
+    """Interactively switch active model/provider."""
+    from vega.display import console, ok, fail, warn
     from config import settings as cfg
     from config import models as mdl
-    from vega.agents import VegaAgent, make_default_tools
+    from providers import get_provider
 
-    text = raw.strip().lower()
+    primary_models = [
+        ("nvidia", "meta/llama-3.1-405b-instruct", "Llama 3.1 405B (NVIDIA)"),
+        ("google", "gemini-2.0-flash", "Gemini 2.0 Flash (Google)"),
+        ("groq", "llama-3.3-70b-versatile", "Llama 3.3 70B (Groq)"),
+        ("deepseek", "deepseek-chat", "DeepSeek-V3 (DeepSeek)"),
+        ("nvidia", "moonshotai/kimi-k2", "Kimi K2.6 (NVIDIA)"),
+    ]
 
-    # /connect → wizard
-    if text.startswith("/connect"):
-        _handle_connect(session)
-        return True
+    console.print()
+    console.print("  ✦ Switch Active Model", style="bold bright_cyan")
+    console.print()
+    for i, (p, m, name) in enumerate(primary_models, start=1):
+        is_active = (cfg.get_active_model() == m and cfg.get_active_provider() == p)
+        marker = "★" if is_active else " "
+        console.print(f"    {i}. {marker} {name} ({m})", style="cyan")
+    console.print()
 
-    # /agents → show agent registry
-    if text.startswith("/agents"):
-        _print_agents_table()
-        return True
-
-    # /switch <provider> → same as /provider
-    if text.startswith("/switch "):
-        parts = text.split()
-        if len(parts) >= 2:
-            from vega.chat import run_chat_loop
-            # Reuse the /provider logic via routing
-            raw_redirect = f"/provider {parts[1]}"
-            from vega.router import route as _route
-            return False   # Let chat loop handle it after redirect
-
-    # /build <goal> → project builder
-    if text.startswith("/build "):
-        goal = raw.strip()[7:].strip()
-        if goal:
-            import re as _re
-            from vega.builder import ProjectBuilder
-            slug   = _re.sub(r"[^\w]", "_", goal[:40]).strip("_").lower()
-            outdir = Path(f"./{slug}")
-            builder = ProjectBuilder(
-                provider   = session.provider,
-                output_dir = outdir,
-                verbose    = True,
-            )
-            builder.build(goal)
+    try:
+        raw = console.input("  Choose a model [1-5]: ").strip()
+        if not raw:
+            return
+        idx = int(raw) - 1
+        if 0 <= idx < len(primary_models):
+            p, m, name = primary_models[idx]
+            api_key = cfg.get_api_key(p)
+            if not api_key:
+                warn(f"No API key set for {p}. Running /connect first.")
+                _run_first_time_wizard()
+                api_key = cfg.get_api_key(p)
+                if not api_key:
+                    fail(f"Failed to switch: no key for {p}.")
+                    return
+            new_provider = get_provider(p, api_key, m)
+            session.switch_provider(new_provider)
+            cfg.set_active_provider(p)
+            cfg.set_active_model(m)
+            ok(f"Switched active model to: {name}")
         else:
-            fail("Usage: /build <project description>")
+            fail("Invalid choice.")
+    except Exception as exc:
+        fail(f"Could not switch model: {exc}")
+
+
+def handle_slash_command(raw: str, session) -> bool:
+    """
+    Handle all slash commands inside the REPL loop.
+    Returns True if raw was a command, False if it was regular chat.
+    """
+    from vega.display import (
+        console, show_help_table, show_models_table, show_agents_table,
+        show_settings, show_history, show_goodbye, show_error, show_success,
+        show_spinner,
+    )
+    from config import settings as cfg
+    from config import models as mdl
+    from providers import SUPPORTED_PROVIDERS, get_provider
+    import sys
+    from pathlib import Path
+
+    text = raw.strip()
+    if not text.startswith("/"):
+        return False
+
+    parts = text[1:].split()
+    cmd = parts[0].lower() if parts else ""
+    args = parts[1:] if len(parts) > 1 else []
+    remainder = " ".join(args)
+
+    try:
+        if cmd in ("help", "h"):
+            show_help_table()
+            return True
+
+        elif cmd in ("exit", "quit", "q"):
+            session.save()
+            show_goodbye()
+            sys.exit(0)
+
+        elif cmd == "connect":
+            _handle_connect(session)
+            return True
+
+        elif cmd in ("provider", "p"):
+            if not args:
+                info(f"Current provider: {session.provider.name}")
+                info(f"Supported: {', '.join(SUPPORTED_PROVIDERS)}")
+            else:
+                p_name = args[0].lower()
+                if p_name not in SUPPORTED_PROVIDERS:
+                    show_error(f"Unknown provider '{p_name}'. Choose from: {SUPPORTED_PROVIDERS}")
+                else:
+                    api_key = cfg.get_api_key(p_name)
+                    new_model = mdl.get_default_model(p_name)
+                    new_provider = get_provider(p_name, api_key, new_model)
+                    session.switch_provider(new_provider)
+                    cfg.set_active_provider(p_name)
+                    cfg.set_active_model(new_model)
+                    show_success(f"Switched provider to {p_name} ({new_model})")
+            return True
+
+        elif cmd in ("switch", "s"):
+            _handle_switch(session)
+            return True
+
+        elif cmd in ("model", "m"):
+            if not args:
+                info(f"Current model: {session.provider.model}")
+            else:
+                new_model = args[0]
+                session.provider.model = new_model
+                cfg.set_active_model(new_model)
+                show_success(f"Model set to {new_model}")
+            return True
+
+        elif cmd == "models":
+            show_models_table()
+            return True
+
+        elif cmd == "agents":
+            show_agents_table()
+            return True
+
+        elif cmd == "build":
+            goal = remainder.strip()
+            if not goal:
+                goal = console.input("  Project description › ").strip()
+            if goal:
+                import re as _re
+                from vega.builder import ProjectBuilder
+                slug = _re.sub(r"[^\w]", "_", goal[:40]).strip("_").lower()
+                outdir = Path(f"./{slug}")
+                builder = ProjectBuilder(
+                    provider   = session.provider,
+                    output_dir = outdir,
+                    verbose    = True,
+                )
+                builder.build(goal)
+            else:
+                show_error("No project goal provided.")
+            return True
+
+        elif cmd in ("clear", "cls"):
+            session.clear()
+            console.clear()
+            show_success("Terminal cleared and chat history reset.")
+            return True
+
+        elif cmd == "history":
+            prompts = [m.content for m in session.history if m.role == "user"]
+            show_history(prompts)
+            return True
+
+        elif cmd == "export":
+            # ZIP current project
+            from tools.zip_export import zip_project
+            with show_spinner("Zipping project directory..."):
+                zip_path = zip_project(".")
+            show_success(f"Project directory zipped successfully!")
+            info(f"Archive saved at: {zip_path.resolve()}")
+            return True
+
+        elif cmd == "settings":
+            show_settings(cfg.as_dict())
+            return True
+
+        elif cmd in ("config", "cfg"):
+            if not args:
+                show_settings(cfg.as_dict())
+            elif len(args) == 1:
+                info(f"{args[0]} = {cfg.get(args[0])}")
+            else:
+                k = args[0]
+                v = " ".join(args[1:])
+                if v.lower() in ("true", "false"):
+                    v = v.lower() == "true"
+                elif v.replace(".", "", 1).lstrip("-").isdigit():
+                    v = float(v) if "." in v else int(v)
+                cfg.set_value(k, v)
+                show_success(f"Config updated: {k} = {v}")
+            return True
+
+        elif cmd in ("system", "sys"):
+            if remainder:
+                session.set_system_prompt(remainder)
+            else:
+                cur = next((m.content for m in session.history if m.role == "system"), None)
+                info(cur or "No system prompt set.")
+            return True
+
+        elif cmd == "tokens":
+            info(f"Turns: {session.turn_count} | Output tokens: ~{session.total_output} | Context messages: {len(session.history)}")
+            return True
+
+        elif cmd == "reset":
+            cfg.reset()
+            show_success("Configuration reset to defaults.")
+            return True
+
+        elif cmd == "version":
+            from vega import __version__, __tagline__, __url__
+            console.print()
+            console.print(Text.assemble(
+                ("  Vega CLI ", "bold bright_cyan"),
+                (f"v{__version__}\n", "cyan"),
+                (f"  {__tagline__}\n", "dim"),
+                ("  GitHub: ", "vega.muted"),
+                (__url__, "underline cyan"),
+            ))
+            console.print()
+            return True
+
+        else:
+            show_error(f"Unknown command: /{cmd} — type /help for available commands.")
+            return True
+
+    except Exception as exc:
+        show_error(f"Command /{cmd} failed: {exc}")
         return True
 
-    # /settings → alias for /config
-    if text.startswith("/settings"):
-        config_table(cfg.as_dict())
-        return True
 
-    # /version
-    if text.startswith("/version"):
+# ─────────────────────────────────────────────
+#  Goodbye
+# ─────────────────────────────────────────────
+
+def _print_goodbye() -> None:
+    from vega.display import show_goodbye
+    show_goodbye()
+
+
+# ─────────────────────────────────────────────
+#  Interactive REPL loop
+# ─────────────────────────────────────────────
+
+def run_chat_loop(
+    session:      ChatSession,
+    show_welcome: bool = True,
+) -> None:
+    """
+    Start the interactive Vega chat REPL.
+    """
+    from vega.router import route, Intent
+    from vega.display import console, ok, fail, dim, show_agent_badge, show_error
+
+    if show_welcome:
+        console.print()
         console.print(
             Text.assemble(
-                ("  Vega CLI ", "bold bright_cyan"),
-                (f"v{__version__}", "cyan"),
-                ("  by ", "dim"),
-                (__author__, "vega.muted"),
+                ("  ✦ Vega ", "bold bright_cyan"),
+                (f"v{__version__} ", "vega.muted"),
+                ("is ready. Type ", "dim"),
+                ("/help", "bold cyan"),
+                (" for commands.", "dim"),
             )
         )
-        return True
+        console.print()
 
-    return False
+    while True:
+        try:
+            raw = console.input(
+                Text.assemble(
+                    ("\n  ✦ › ", "bold cyan"),
+                ).markup
+            ).strip()
+        except EOFError:
+            console.print()
+            ok("Session saved. Goodbye! ✦")
+            session.save()
+            break
+        except KeyboardInterrupt:
+            console.print()
+            dim("  (Use /exit to quit, or Ctrl-D)")
+            continue
+
+        if not raw:
+            continue
+
+        if raw.startswith("/"):
+            handle_slash_command(raw, session)
+            continue
+
+        result = route(raw)
+
+        if result.intent == Intent.BUILD:
+            from vega.builder import ProjectBuilder
+            import re as _re
+            slug   = _re.sub(r"[^\w]", "_", raw[:40]).strip("_").lower()
+            outdir = Path(f"./{slug}")
+            try:
+                builder = ProjectBuilder(
+                    provider   = session.provider,
+                    output_dir = outdir,
+                    verbose    = True,
+                )
+                builder.build(raw)
+            except Exception as exc:
+                show_error(f"Build failed: {exc}")
+        else:
+            try:
+                if result.agent:
+                    show_agent_badge(result.agent)
+                session.send(raw, agent=result.agent)
+            except Exception as exc:
+                show_error(str(exc))
 
 
 def _print_agents_table() -> None:
@@ -414,7 +651,7 @@ def main(
     active_provider = _boot_provider()
 
     # ── Build ChatSession ─────────────────────
-    from vega.chat import ChatSession, run_chat_loop
+    from vega.chat import ChatSession
     from config import settings as cfg2
 
     session = ChatSession(
@@ -427,7 +664,10 @@ def main(
     if prompt:
         try:
             from vega.router import route
+            from vega.display import show_agent_badge
             res = route(prompt)
+            if res.agent:
+                show_agent_badge(res.agent)
             session.send(prompt, agent=res.agent)
         except Exception as exc:
             fail(f"{exc}")
@@ -436,192 +676,7 @@ def main(
         return
 
     # ── Interactive mode ──────────────────────
-    # Monkey-patch run_chat_loop to intercept extended commands
-    _original_loop = run_chat_loop
-
-    def _patched_loop(sess, show_welcome=True):
-        """Wrap run_chat_loop to handle /connect, /agents, /build, /version, /settings."""
-        from vega.router import route, Intent, is_exit, HELP_TEXT, is_command
-
-        if show_welcome:
-            console.print()
-            console.print(
-                Text.assemble(
-                    ("  ✦ Vega ", "bold bright_cyan"),
-                    (f"v{__version__} ", "vega.muted"),
-                    ("is ready. Type ", "dim"),
-                    ("/help", "bold cyan"),
-                    (" for commands, ", "dim"),
-                    ("/connect", "bold cyan"),
-                    (" to switch provider.", "dim"),
-                )
-            )
-            console.print()
-
-        while True:
-            try:
-                raw = console.input(
-                    Text.assemble(("\n  ✦ › ", "bold cyan")).markup
-                ).strip()
-            except EOFError:
-                console.print()
-                ok("Session saved. Goodbye! ✦")
-                sess.save()
-                break
-            except KeyboardInterrupt:
-                console.print()
-                dim("  (Use /exit to quit)")
-                continue
-
-            if not raw:
-                continue
-
-            # Try extended commands first
-            if _handle_extended_commands(raw, sess):
-                continue
-
-            # Then standard chat loop handler
-            result = route(raw)
-
-            if is_exit(result):
-                ok("Goodbye! ✦")
-                sess.save()
-                _print_goodbye()
-                break
-
-            from vega.router import Intent as I
-            if result.intent == I.CMD_HELP:
-                _print_help()
-                continue
-
-            # Delegate everything else to the standard handler
-            # Re-import and call inner handler logic
-            _dispatch(raw, result, sess)
-
-    _patched_loop(session)
-
-
-# ─────────────────────────────────────────────
-#  Inner dispatcher (avoids circular import)
-# ─────────────────────────────────────────────
-
-def _dispatch(raw: str, result, session) -> None:
-    """Dispatch a RouteResult to the appropriate handler."""
-    from vega.router import Intent
-    from config import settings as cfg
-    from config import models as mdl
-    from providers import get_provider, SUPPORTED_PROVIDERS
-    from vega.display import models_table, config_table, make_table
-    from vega.chat import ChatSession, export_session_markdown
-    from rich import box as rbox
-
-    intent = result.intent
-
-    if intent == Intent.CMD_CLEAR:
-        session.clear()
-        console.clear()
-
-    elif intent == Intent.CMD_MODELS:
-        pf = result.args[0] if result.args else None
-        models_table(mdl.models_as_dicts(pf))
-
-    elif intent == Intent.CMD_MODEL:
-        if not result.args:
-            info(f"Current model: {session.provider.model}")
-        else:
-            session.provider.model = result.args[0]
-            cfg.set_active_model(result.args[0])
-            ok(f"Model → {result.args[0]}")
-
-    elif intent == Intent.CMD_PROVIDER:
-        if not result.args:
-            info(f"Current provider: {session.provider.name}")
-        else:
-            np = result.args[0].lower()
-            if np not in SUPPORTED_PROVIDERS:
-                fail(f"Unknown provider '{np}'")
-            else:
-                ak = cfg.get_api_key(np)
-                nm = mdl.get_default_model(np)
-                try:
-                    new_p = get_provider(np, ak, nm)
-                    session.switch_provider(new_p)
-                    cfg.set_active_provider(np)
-                    cfg.set_active_model(nm)
-                except Exception as exc:
-                    fail(str(exc))
-
-    elif intent == Intent.CMD_SYSTEM:
-        if result.remainder:
-            session.set_system_prompt(result.remainder)
-        else:
-            cur = next((m.content for m in session.history if m.role == "system"), None)
-            info(cur or "No system prompt set.")
-
-    elif intent == Intent.CMD_CONFIG:
-        if not result.args:
-            config_table(cfg.as_dict())
-        elif len(result.args) == 1:
-            info(f"{result.args[0]} = {cfg.get(result.args[0])}")
-        else:
-            k = result.args[0]
-            v: object = " ".join(result.args[1:])
-            if str(v).lower() in ("true","false"):
-                v = str(v).lower() == "true"
-            elif str(v).replace(".","",1).lstrip("-").isdigit():
-                v = float(str(v)) if "." in str(v) else int(str(v))
-            cfg.set_value(k, v)
-            ok(f"{k} = {v}")
-
-    elif intent == Intent.CMD_HISTORY:
-        sessions = ChatSession.list_sessions()
-        if not sessions:
-            dim("  No saved sessions.")
-        else:
-            tbl = make_table(
-                title="Saved Sessions",
-                columns=["ID", "Turns", "Modified", "Size"],
-                col_styles=["vega.accent","vega.dim","vega.secondary","vega.dim"],
-                show_lines=True, box_style=rbox.ROUNDED,
-            )
-            for s in sessions:
-                tbl.add_row(s["id"][:14]+"…", str(s["turns"]), s["modified"], s["size"])
-            console.print(tbl)
-
-    elif intent == Intent.CMD_EXPORT:
-        out = result.remainder.strip() or None
-        export_session_markdown(session, Path(out) if out else None)
-
-    elif intent == Intent.CMD_TOKENS:
-        info(f"Turns: {session.turn_count} | Output tokens: ~{session.total_output} | Context messages: {len(session.history)}")
-
-    elif intent == Intent.CMD_RESET:
-        cfg.reset()
-        ok("Config reset to defaults.")
-
-    elif intent == Intent.CMD_AGENT:
-        from vega.agents import VegaAgent, make_default_tools
-        goal = result.remainder.strip() or console.input(
-            Text("  Goal › ", style="bold cyan").markup
-        ).strip()
-        if goal:
-            VegaAgent(provider=session.provider, tools=make_default_tools()).run(goal)
-
-    elif intent == Intent.UNKNOWN_CMD:
-        fail(f"Unknown command: /{result.command}  — type /help")
-
-    elif intent == Intent.BUILD:
-        import re as _re
-        from vega.builder import ProjectBuilder
-        slug   = _re.sub(r"[^\w]", "_", raw[:40]).strip("_").lower()
-        outdir = Path(f"./{slug}")
-        ProjectBuilder(provider=session.provider, output_dir=outdir).build(raw)
-
-    else:
-        try:
-            session.send(raw, agent=result.agent)
-        except Exception as exc:
-            fail(str(exc))
+    run_chat_loop(session)
 
 
 # ─────────────────────────────────────────────
