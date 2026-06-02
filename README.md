@@ -2,15 +2,14 @@
 
 <br/>
 
-```
+<pre>
 ██╗   ██╗███████╗ ██████╗  █████╗
 ██║   ██║██╔════╝██╔════╝ ██╔══██╗
 ██║   ██║█████╗  ██║  ███╗███████║
 ╚██╗ ██╔╝██╔══╝  ██║   ██║██╔══██║
  ╚████╔╝ ███████╗╚██████╔╝██║  ██║
   ╚═══╝  ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
-```
-
+</pre>
 **An AI-powered CLI tool that builds projects, answers questions, and runs agents — right in your terminal.**
 
 [![PyPI version](https://img.shields.io/pypi/v/vega-raimic?color=blue&label=pypi)](https://pypi.org/project/vega-raimic/)
