@@ -210,7 +210,9 @@ class DeepSeekProvider(BaseProvider):
             ) from exc
 
         except APIConnectionError as exc:
-            raise VegaTimeoutError(
+            print("📡 No internet connection detected")
+            print("Check your connection and try again")
+            raise VegaProviderError(
                 self.name, f"Connection error reaching DeepSeek: {exc}"
             ) from exc
 
@@ -276,7 +278,9 @@ class DeepSeekProvider(BaseProvider):
             ) from exc
 
         except APIConnectionError as exc:
-            raise VegaTimeoutError(
+            print("📡 No internet connection detected")
+            print("Check your connection and try again")
+            raise VegaProviderError(
                 self.name, f"Connection error reaching DeepSeek: {exc}"
             ) from exc
 
@@ -306,6 +310,9 @@ class DeepSeekProvider(BaseProvider):
                 self.name, f"Validation failed: {exc}", status_code=exc.status_code
             ) from exc
         except (APITimeoutError, APIConnectionError) as exc:
+            if isinstance(exc, APIConnectionError):
+                print("📡 No internet connection detected")
+                print("Check your connection and try again")
             raise VegaTimeoutError(
                 self.name, f"Could not reach DeepSeek API: {exc}"
             ) from exc
@@ -419,6 +426,8 @@ def _raise_from_status(provider: str, exc: "APIStatusError") -> None:
     body = str(exc.message) if hasattr(exc, "message") else str(exc)
 
     if code == 401:
+        print("❌ Invalid API key for deepseek")
+        print("Get your key at https://platform.deepseek.com")
         raise VegaAuthError(
             provider,
             f"Invalid API key. Get yours at https://platform.deepseek.com  ({body})",
@@ -443,6 +452,9 @@ def _raise_from_status(provider: str, exc: "APIStatusError") -> None:
             status_code=code,
         ) from exc
     if code == 429:
+        print("⚡ Rate limit hit on deepseek — switching...")
+        from config.settings import fallback_provider
+        fallback_provider("deepseek")
         raise VegaRateLimitError(
             provider,
             f"Rate limit exceeded — slow down or check your plan. ({body})",

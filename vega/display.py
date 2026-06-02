@@ -98,16 +98,7 @@ def print_logo(show_version: bool = True) -> None:
 
 def print_banner() -> None:
     """Compact single-line banner for non-interactive contexts."""
-    console.print(
-        Text.assemble(
-            ("✦ VEGA ", "vega.accent"),
-            (f"{VERSION} ", "vega.muted"),
-            ("— ", "vega.dim"),
-            (TAGLINE, "vega.secondary"),
-            (" — ", "vega.dim"),
-            (BYLINE, "vega.muted"),
-        )
-    )
+    console.print(f"Vega {VERSION} {BYLINE}")
 
 
 # ─────────────────────────────────────────────
@@ -454,41 +445,366 @@ def print_prompt_hint() -> None:
 
 
 # ─────────────────────────────────────────────
-#  Demo (run directly to preview)
+#  Production Hardened UI Functions (TASK 9)
 # ─────────────────────────────────────────────
 
-if __name__ == "__main__":
-    print_logo()
-    section("Panels")
-    info_panel("Everything is connected to the stars.")
-    success_panel("Model loaded successfully.")
-    warning_panel("Rate limit approaching.")
-    error_panel("API key not set. Run `vega config set api_key <key>`.")
+def show_logo() -> None:
+    """Print the full Vega ASCII logo with tagline and cyan underline."""
+    logo_text = Text(VEGA_LOGO, style="vega.accent")
+    tagline    = Text(f"  {TAGLINE}", style="vega.secondary")
+    byline     = Text(f"  {BYLINE}", style="vega.muted")
+    ver        = Text(f"  {VERSION}", style="vega.dim")
 
-    section("Spinner")
-    with spinner("Calling DeepSeek…"):
-        time.sleep(2)
-    ok("Response received.")
+    content = Text.assemble(logo_text, "\n", tagline, "\n", byline, "\n", ver)
 
-    section("Progress Bar")
-    import random
-    items = list(range(20))
-    for _ in progress_track(items, description="Streaming tokens", total=len(items)):
-        time.sleep(0.05)
+    panel = Panel(
+        Align.center(content),
+        border_style="vega.border",
+        padding=(0, 4),
+        box=box.DOUBLE_EDGE,
+    )
+    console.print(panel)
+    console.print()
+    rule(style="cyan")
 
-    section("Models Table")
-    models_table(
-        [
-            {"provider": "NVIDIA", "name": "Llama 3.1 405B", "id": "meta/llama-3.1-405b-instruct", "context": "128k", "notes": "Flagship"},
-            {"provider": "Google", "name": "Gemini 1.5 Pro", "id": "gemini-1.5-pro", "context": "1M",    "notes": "Long context"},
-            {"provider": "Groq",   "name": "Mixtral 8x7B",   "id": "mixtral-8x7b-32768",          "context": "32k",  "notes": "Fast"},
-            {"provider": "DeepSeek","name": "DeepSeek-V3",   "id": "deepseek-chat",                "context": "64k",  "notes": "Coder"},
-        ]
+
+def show_welcome_panel() -> None:
+    """Show the first-run welcome panel."""
+    panel(
+        Text.assemble(
+            ("Welcome to Vega CLI!\n\n", "bold bright_cyan"),
+            ("To get started, connect an AI provider.\n", "cyan"),
+            ("NVIDIA NIM offers a ", "dim"),
+            ("free tier", "bold cyan"),
+            (" — grab a key in 30 seconds at build.nvidia.com", "dim"),
+        ),
+        title="  ✦ First Launch",
+        border_style="bright_cyan",
     )
 
-    section("Chat UI")
-    print_user_message("Write a Python async web scraper.")
-    print_ai_message("Here's a minimal `asyncio` + `httpx` scraper:\n\n```python\nimport asyncio, httpx\n\nasync def fetch(url):\n    async with httpx.AsyncClient() as client:\n        r = await client.get(url)\n        return r.text\n\nasyncio.run(fetch('https://example.com'))\n```", model_name="DeepSeek-V3")
 
-    section("Done")
-    print_banner()
+def show_user_panel(msg: str) -> None:
+    """Render the standard user panel."""
+    print_user_message(msg)
+
+
+def show_vega_panel(msg: str) -> None:
+    """Render the standard Vega response panel."""
+    print_ai_message(msg, model_name="Vega")
+
+
+def show_agent_badge(agent) -> None:
+    """Print the colored agent badge with icon."""
+    if hasattr(agent, "badge") and hasattr(agent, "name"):
+        badge = agent.badge
+        name = agent.name
+    elif isinstance(agent, dict):
+        badge = agent.get("badge", "⟡")
+        name = agent.get("name", "Agent")
+    else:
+        badge = "⟡"
+        name = str(agent)
+    console.print(Text.assemble(
+        ("  ", ""),
+        (f" {badge} {name} ", "bold black on bright_cyan"),
+        (" active", "dim cyan"),
+    ))
+
+
+def show_file_tree(files: list) -> None:
+    """Render a clean, folder-grouped file tree."""
+    from rich.tree import Tree
+    from pathlib import Path
+    
+    root_name = "./"
+    tree = Tree(Text(f"📁 {root_name}", style="bold bright_cyan"), guide_style="dim cyan")
+    nodes: dict = {}
+    for f in files:
+        if hasattr(f, "path"):
+            p_str = f.path
+        elif isinstance(f, dict):
+            p_str = f.get("path", "")
+        else:
+            p_str = str(f)
+        
+        if not p_str:
+            continue
+        
+        parts = Path(p_str).parts
+        cur = nodes
+        for part in parts[:-1]:
+            cur = cur.setdefault(part, {})
+        cur[parts[-1]] = None
+
+    def _add_nodes(tree_node, subtree: dict) -> None:
+        dirs  = sorted(k for k, v in subtree.items() if isinstance(v, dict))
+        fls   = sorted(k for k, v in subtree.items() if v is None)
+        for d in dirs:
+            branch = tree_node.add(Text(f"📁 {d}/", style="bold cyan"))
+            _add_nodes(branch, subtree[d])
+        for fl in fls:
+            suffix = Path(fl).suffix.lower()
+            icon  = _file_icon(suffix)
+            tree_node.add(Text(f"{icon} {fl}", style="vega.secondary"))
+
+    _add_nodes(tree, nodes)
+    console.print()
+    console.print(tree)
+    console.print()
+
+
+def show_progress(n: int, total: int) -> None:
+    """Show a progress bar indicating file count progress."""
+    percent = int((n / total) * 100) if total > 0 else 100
+    filled = int((n / total) * 30) if total > 0 else 30
+    bar = "█" * filled + "░" * (30 - filled)
+    console.print(Text.assemble(
+        ("  Writing files: ", "vega.secondary"),
+        (f"[{bar}]", "vega.accent"),
+        (f" {n}/{total} ", "vega.primary"),
+        (f" ({percent}%)", "vega.dim"),
+    ))
+
+
+def show_models_table(models: Optional[list[dict]] = None) -> None:
+    """List key models with a star indicating the default/active model."""
+    from config import settings as cfg
+    active_model = cfg.get_active_model()
+    
+    if models is None:
+        from config import models as mdl
+        all_mdls = mdl.models_as_dicts()
+        primary_ids = {
+            "meta/llama-3.1-405b-instruct",
+            "gemini-2.0-flash",
+            "llama-3.3-70b-versatile",
+            "deepseek-chat",
+            "moonshotai/kimi-k2"
+        }
+        models = [m for m in all_mdls if m["id"] in primary_ids]
+        if len(models) < 5:
+            models = all_mdls[:5]
+
+    tbl = make_table(
+        title="Vega Models Registry",
+        columns=["Status", "Provider", "Model Name", "Model ID", "Context", "Notes"],
+        col_styles=[
+            "bold yellow",
+            "bold cyan",
+            "vega.secondary",
+            "vega.muted",
+            "vega.dim",
+            "vega.dim",
+        ],
+        show_lines=True,
+        box_style=box.ROUNDED,
+    )
+    for m in models:
+        is_active = (m["id"] == active_model)
+        status = "★ Active" if is_active else " "
+        tbl.add_row(
+            status,
+            m.get("provider", "—").upper(),
+            m.get("name", "—"),
+            m.get("id", "—"),
+            m.get("context", "—"),
+            m.get("notes", ""),
+        )
+    console.print(tbl)
+
+
+def show_agents_table() -> None:
+    """Render specialized agents roster as a rich table."""
+    tbl = make_table(
+        title="Vega Specialized Agents",
+        columns=["Icon", "Agent", "Triggers", "Description"],
+        col_styles=["vega.accent", "bold cyan", "vega.secondary", "vega.dim"],
+        show_lines=True,
+        box_style=box.ROUNDED,
+    )
+    agents_info = [
+        ("⟡",  "CodeAgent",    "build, create, make, clone, duplicate, port, rewrite, scaffold, boilerplate, template, starter, init", "Code architect and generation wizard"),
+        ("🎨", "ImageAgent",   "image, draw, picture", "Creative visual assets generator"),
+        ("⚡", "FastAgent",    "what, explain, quick, what's, who is, how many, when was, list, show me, give me, summarize", "Lightning fast Q&A responder"),
+        ("🗺", "PlannerAgent", "plan, architect, design", "Architectural layouts & structure planner"),
+        ("🔧", "DebugAgent",   "fix, bug, error, debug, traceback, exception, failing, doesn't work, not running, syntax error, runtime error", "Diagnostic debugger & bug resolver"),
+        ("👁",  "ReviewAgent",  "review, refactor, improve, audit, security, performance, lint, best practices, code quality", "Code auditor & quality inspector"),
+    ]
+    for icon, name, triggers, desc in agents_info:
+        tbl.add_row(icon, name, triggers, desc)
+    console.print(tbl)
+
+
+def show_help_table() -> None:
+    """Render /help command output as a rich table with a cyan border."""
+    tbl = Table(
+        box=box.ROUNDED,
+        border_style="cyan",
+        show_header=False,
+        padding=(0, 2),
+        expand=False,
+    )
+    tbl.add_column("Command", style="bold cyan", min_width=22)
+    tbl.add_column("Description", style="dim white")
+
+    commands = [
+        ("/help",              "Show this help message"),
+        ("/exit  /quit",       "Exit Vega"),
+        ("/connect",           "Set up or change API provider"),
+        ("/provider [name]",   "Switch active provider"),
+        ("/switch",            "Interactively switch model"),
+        ("/model [id]",        "Switch model"),
+        ("/models",            "List key models (starred default)"),
+        ("/agents",            "Show specialised agent roster"),
+        ("/build <goal>",      "Build a project (builder mode)"),
+        ("/clear",             "Clear chat history"),
+        ("/history",           "Show last 10 prompts"),
+        ("/export [path]",     "Export session to Markdown"),
+        ("/settings",          "Show all config values"),
+        ("/config [k] [v]",    "View or set a config key"),
+        ("/system [prompt]",   "Set or view system prompt"),
+        ("/tokens",            "Show token usage stats"),
+        ("/agent [goal]",      "Run autonomous agent"),
+        ("/reset",             "Reset config to defaults"),
+        ("/version",           "Print Vega version"),
+    ]
+    for cmd, desc in commands:
+        tbl.add_row(cmd, desc)
+
+    console.print()
+    console.print(Text("  ✦ Vega CLI — Commands", style="bold bright_cyan"))
+    console.print(tbl)
+    console.print(Text("  Tip: start with \"build me a…\" to enter builder mode automatically.\n", style="dim"))
+
+
+def show_settings(config: dict) -> None:
+    """Render current configuration in a rich panel."""
+    tbl = make_table(
+        columns=["Key", "Value"],
+        col_styles=["vega.primary", "vega.secondary"],
+        show_lines=False,
+        box_style=box.SIMPLE,
+    )
+    for k, v in config.items():
+        tbl.add_row(str(k), str(v))
+    p = Panel(
+        tbl,
+        title=Text("⚙  Vega Configuration", style="vega.title"),
+        border_style="cyan",
+        expand=False,
+    )
+    console.print(p)
+
+
+def show_history(history: list[str]) -> None:
+    """Render the last 10 prompts in a numbered list."""
+    if not history:
+        console.print(Text("  No history yet.", style="vega.dim"))
+        return
+    
+    tbl = make_table(
+        title="Prompt History (Last 10)",
+        columns=["#", "Prompt"],
+        col_styles=["vega.accent", "vega.secondary"],
+        show_lines=False,
+        box_style=box.SIMPLE,
+    )
+    for i, prompt in enumerate(history[-10:], start=1):
+        tbl.add_row(f"{i}.", prompt)
+    console.print(tbl)
+
+
+def show_goodbye() -> None:
+    """Show the exit goodbye panel."""
+    p = Panel(
+        Align.center(
+            Text.assemble(
+                ("Thanks for using ", "cyan"),
+                ("Vega", "bold bright_cyan"),
+                (" — code at the speed of stars.\n", "cyan"),
+                ("★ Keep coding! ★", "bold yellow"),
+            )
+        ),
+        border_style="bright_cyan",
+        box=box.DOUBLE,
+        expand=False,
+    )
+    console.print()
+    console.print(p)
+    console.print()
+
+
+def show_error(msg: str) -> None:
+    """Display a red error panel."""
+    error_panel(msg)
+
+
+def show_success(msg: str) -> None:
+    """Display a green success panel."""
+    success_panel(msg)
+
+
+def show_spinner(msg: str = "Thinking…"):
+    """Animated spinner context manager."""
+    return spinner(msg)
+
+
+def _file_icon(ext: str) -> str:
+    """Return a terminal emoji icon for a given file extension."""
+    icons = {
+        ".py":    "🐍",
+        ".js":    "📜",
+        ".ts":    "📘",
+        ".jsx":   "⚛️",
+        ".tsx":   "⚛️",
+        ".html":  "🌐",
+        ".css":   "🎨",
+        ".json":  "📋",
+        ".toml":  "⚙️",
+        ".yaml":  "⚙️",
+        ".yml":   "⚙️",
+        ".md":    "📝",
+        ".txt":   "📄",
+        ".sh":    "🔧",
+        ".env":   "🔑",
+        ".sql":   "🗄️",
+        ".go":    "🐹",
+        ".rs":    "🦀",
+        ".java":  "☕",
+        ".rb":    "💎",
+        ".gitignore": "🚫",
+        ".dockerfile": "🐳",
+    }
+    return icons.get(ext.lower(), "📄")
+
+
+if __name__ == "__main__":
+    show_logo()
+    section("Panels")
+    show_welcome_panel()
+    show_user_panel("Write a Python async web scraper.")
+    show_vega_panel("Here's a minimal example.")
+    show_agent_badge({"badge": "⟡", "name": "CodeAgent"})
+    
+    section("Spinner")
+    with show_spinner("Testing spinner…"):
+        time.sleep(1)
+    
+    section("Progress Bar")
+    show_progress(5, 10)
+    
+    section("Models Table")
+    show_models_table()
+    
+    section("Agents Table")
+    show_agents_table()
+
+    section("Help Table")
+    show_help_table()
+    
+    section("Settings")
+    show_settings({"provider": "nvidia", "model": "meta/llama-3.1-405b-instruct"})
+    
+    section("Goodbye")
+    show_goodbye()
+

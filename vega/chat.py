@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterator, Optional
 
-from providers.base import BaseProvider, Message, StreamChunk
+from providers.base import BaseProvider, Message, StreamChunk, VegaRateLimitError
 from vega.agents import AgentInfo
 from vega.display import (
     console,
@@ -216,6 +216,25 @@ class ChatSession:
             if not assembled:
                 assembled = "[interrupted]"
             dim("  ⚡ Interrupted by user.")
+
+        except VegaRateLimitError as exc:
+            from config import settings as cfg
+            from providers import get_provider
+            new_prov_name = cfg.get_active_provider()
+            if new_prov_name != provider_to_use.name:
+                new_key = cfg.get_api_key(new_prov_name)
+                new_model = cfg.get_active_model()
+                try:
+                    new_provider = get_provider(new_prov_name, new_key, new_model)
+                    self.switch_provider(new_provider)
+                    # Clear current parts and retry stream response
+                    return self._stream_response(agent=agent)
+                except Exception as swap_exc:
+                    fail(f"Failed to switch to fallback provider: {swap_exc}")
+                    raise exc
+            else:
+                fail("No fallback provider configured with an API key.")
+                raise exc
 
         except Exception as exc:  # noqa: BLE001
             fail(f"Stream error: {exc}")

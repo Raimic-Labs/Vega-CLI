@@ -148,7 +148,9 @@ class GroqProvider(BaseProvider):
             ) from exc
 
         except APIConnectionError as exc:
-            raise VegaTimeoutError(
+            print("📡 No internet connection detected")
+            print("Check your connection and try again")
+            raise VegaProviderError(
                 self.name, f"Connection error reaching Groq: {exc}"
             ) from exc
 
@@ -199,7 +201,9 @@ class GroqProvider(BaseProvider):
             ) from exc
 
         except APIConnectionError as exc:
-            raise VegaTimeoutError(
+            print("📡 No internet connection detected")
+            print("Check your connection and try again")
+            raise VegaProviderError(
                 self.name, f"Connection error reaching Groq: {exc}"
             ) from exc
 
@@ -224,6 +228,9 @@ class GroqProvider(BaseProvider):
                 self.name, f"Validation failed: {exc}", status_code=exc.status_code
             ) from exc
         except (APITimeoutError, APIConnectionError) as exc:
+            if isinstance(exc, APIConnectionError):
+                print("📡 No internet connection detected")
+                print("Check your connection and try again")
             raise VegaTimeoutError(
                 self.name, f"Could not reach Groq: {exc}"
             ) from exc
@@ -277,6 +284,8 @@ def _raise_from_status(provider: str, exc: "APIStatusError") -> None:
     body = str(exc.message) if hasattr(exc, "message") else str(exc)
 
     if code == 401:
+        print("❌ Invalid API key for groq")
+        print("Get your key at https://console.groq.com")
         raise VegaAuthError(
             provider,
             f"Invalid API key. Get yours at https://console.groq.com  ({body})",
@@ -295,6 +304,9 @@ def _raise_from_status(provider: str, exc: "APIStatusError") -> None:
             status_code=code,
         ) from exc
     if code == 429:
+        print("⚡ Rate limit hit on groq — switching...")
+        from config.settings import fallback_provider
+        fallback_provider("groq")
         raise VegaRateLimitError(
             provider,
             f"Rate limit hit — Groq free tier has per-minute limits. ({body})",

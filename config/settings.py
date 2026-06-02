@@ -27,6 +27,9 @@ DEFAULT_CONFIG: dict[str, Any] = {
     # Active provider ("nvidia" | "google" | "groq" | "deepseek")
     "provider": "nvidia",
 
+    # First launch wizard indicator
+    "first_run": True,
+
     # Active model ID (resolved against models.py)
     "model": "meta/llama-3.1-405b-instruct",
 
@@ -262,6 +265,22 @@ def as_dict() -> dict[str, Any]:
         "telemetry":       cfg.get("telemetry"),
         "config_file":     str(CONFIG_FILE),
     }
+def fallback_provider(current_provider: str) -> bool:
+    """
+    Finds a fallback provider with an API key, sets it as active,
+    and returns True if a fallback was successfully set.
+    """
+    from providers import SUPPORTED_PROVIDERS
+    from config import models as mdl
+    for p in SUPPORTED_PROVIDERS:
+        if p != current_provider:
+            api_key = get_api_key(p)
+            if api_key:
+                set_active_provider(p)
+                default_model = mdl.get_default_model(p)
+                set_active_model(default_model)
+                return True
+    return False
 
 
 # ─────────────────────────────────────────────

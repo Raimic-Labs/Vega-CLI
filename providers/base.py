@@ -253,6 +253,7 @@ class BaseProvider(ABC):
                 if attempt >= 1:
                     raise
                 attempt += 1
+                print("⏱ Timed out — retrying once...")
                 time.sleep(2.0)
 
     def complete_with_retry(
@@ -264,6 +265,7 @@ class BaseProvider(ABC):
         try:
             return self.complete(messages, **kwargs)
         except VegaTimeoutError:
+            print("⏱ Timed out — retrying once...")
             time.sleep(2.0)
             return self.complete(messages, **kwargs)
 

@@ -283,6 +283,8 @@ def _raise_from_google_exc(provider: str, exc: Exception) -> None:
                 status_code=400,
             ) from exc
         if status_code in (401, 403) or "API_KEY" in msg.upper() or "permission" in msg.lower():
+            print("❌ Invalid API key for google")
+            print("Get your key at https://aistudio.google.com")
             raise VegaAuthError(
                 provider,
                 f"Invalid or missing Google API key. ({msg})",
@@ -295,6 +297,9 @@ def _raise_from_google_exc(provider: str, exc: Exception) -> None:
                 status_code=404,
             ) from exc
         if status_code == 429:
+            print("⚡ Rate limit hit on google — switching...")
+            from config.settings import fallback_provider
+            fallback_provider("google")
             raise VegaRateLimitError(
                 provider,
                 f"Rate limit exceeded — slow down or upgrade your quota. ({msg})",
@@ -310,7 +315,11 @@ def _raise_from_google_exc(provider: str, exc: Exception) -> None:
 
     # Timeout / connection signals
     low = msg.lower()
-    if any(w in low for w in ("timeout", "timed out", "deadline", "connection")):
+    if "connection" in low or "socket" in low or "dns" in low or "unreachable" in low:
+        print("📡 No internet connection detected")
+        print("Check your connection and try again")
+        raise VegaProviderError(provider, f"Connection error: {msg}") from exc
+    if any(w in low for w in ("timeout", "timed out", "deadline")):
         raise VegaTimeoutError(provider, f"Request timed out: {msg}") from exc
 
     raise VegaProviderError(provider, f"Unexpected error: {msg}") from exc

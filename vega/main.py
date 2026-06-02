@@ -47,6 +47,7 @@ app = typer.Typer(
     rich_markup_mode= "rich",
     no_args_is_help = False,
     invoke_without_command=True,
+    context_settings= {"help_option_names": []},
 )
 
 
@@ -68,6 +69,9 @@ def _run_first_time_wizard() -> None:
     Lets the user pick a provider and enter their key, or skip for later.
     """
     from config import settings as cfg
+
+    # 1. Create ~/.vega directory and save default config if not exists
+    cfg.load()
 
     console.print()
     panel(
@@ -95,6 +99,7 @@ def _run_first_time_wizard() -> None:
 
     if raw in ("5", "", "s", "skip"):
         warn("Skipped. Run /connect inside vega to set your API key anytime.")
+        cfg.set_value("first_run", False)
         return
 
     try:
@@ -102,6 +107,7 @@ def _run_first_time_wizard() -> None:
         provider = choices[idx]
     except (ValueError, IndexError):
         warn("Invalid choice. Skipping setup.")
+        cfg.set_value("first_run", False)
         return
 
     label, url, prefix = _PROVIDERS_INFO[provider]
@@ -115,6 +121,7 @@ def _run_first_time_wizard() -> None:
 
     if not key:
         warn("No key entered. You can set it later with /connect")
+        cfg.set_value("first_run", False)
         return
 
     if not key.startswith(prefix):
@@ -126,6 +133,8 @@ def _run_first_time_wizard() -> None:
     from config import models as mdl
     default_model = mdl.get_default_model(provider)
     cfg.set_active_model(default_model)
+
+    cfg.set_value("first_run", False)
 
     ok(f"Connected to {label}!")
     ok(f"Default model: {default_model}")
@@ -346,6 +355,11 @@ def main(
         help="Print version and exit",
         is_eager=True,
     ),
+    help:     bool = typer.Option(
+        False, "--help", "-h",
+        help="Show rich help table and exit",
+        is_eager=True,
+    ),
     no_logo:  bool = typer.Option(
         False, "--no-logo",
         help="Skip the ASCII logo on startup",
@@ -362,6 +376,12 @@ def main(
 
     Code at the speed of stars — by Raimic Labs
     """
+    # ── --help flag ───────────────────────────
+    if help:
+        from vega.display import show_help_table
+        show_help_table()
+        raise typer.Exit()
+
     # ── --version flag ────────────────────────
     if version:
         print_banner()
@@ -376,7 +396,8 @@ def main(
         print_logo()
 
     # ── First-run wizard ──────────────────────
-    if not _has_any_api_key():
+    from config import settings as cfg
+    if cfg.get("first_run", True):
         _run_first_time_wizard()
         if not _has_any_api_key():
             # User skipped — show hint and exit
@@ -384,7 +405,6 @@ def main(
             raise typer.Exit()
 
     # ── Override provider / model if flags given ──
-    from config import settings as cfg
     if provider:
         cfg.set_active_provider(provider)
     if model:

@@ -151,7 +151,9 @@ class NvidiaProvider(BaseProvider):
             ) from exc
 
         except APIConnectionError as exc:
-            raise VegaTimeoutError(
+            print("📡 No internet connection detected")
+            print("Check your connection and try again")
+            raise VegaProviderError(
                 self.name, f"Connection error: {exc}"
             ) from exc
 
@@ -205,7 +207,9 @@ class NvidiaProvider(BaseProvider):
             ) from exc
 
         except APIConnectionError as exc:
-            raise VegaTimeoutError(
+            print("📡 No internet connection detected")
+            print("Check your connection and try again")
+            raise VegaProviderError(
                 self.name, f"Connection error: {exc}"
             ) from exc
 
@@ -238,6 +242,9 @@ class NvidiaProvider(BaseProvider):
                 self.name, f"Validation failed: {exc}", status_code=exc.status_code
             ) from exc
         except (APITimeoutError, APIConnectionError) as exc:
+            if isinstance(exc, APIConnectionError):
+                print("📡 No internet connection detected")
+                print("Check your connection and try again")
             raise VegaTimeoutError(
                 self.name, f"Could not reach NVIDIA NIM: {exc}"
             ) from exc
@@ -276,6 +283,8 @@ def _raise_from_status(provider: str, exc: "APIStatusError") -> None:
     body = str(exc.message) if hasattr(exc, "message") else str(exc)
 
     if code == 401:
+        print("❌ Invalid API key for nvidia")
+        print("Get your key at https://build.nvidia.com")
         raise VegaAuthError(
             provider,
             f"Invalid API key. Get yours at https://build.nvidia.com  ({body})",
@@ -294,6 +303,9 @@ def _raise_from_status(provider: str, exc: "APIStatusError") -> None:
             status_code=code,
         ) from exc
     if code == 429:
+        print("⚡ Rate limit hit on nvidia — switching...")
+        from config.settings import fallback_provider
+        fallback_provider("nvidia")
         raise VegaRateLimitError(
             provider,
             f"Rate limit hit — wait a moment and retry. ({body})",
