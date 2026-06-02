@@ -187,12 +187,7 @@ def spinner(message: str = "Thinking…", style: str = "dots2") -> Generator[Non
         with spinner("Generating code…"):
             do_heavy_work()
     """
-    spinner_text = Text.assemble(
-        Spinner(style, style="vega.accent"),  # type: ignore[arg-type]
-        ("  ", ""),
-        (message, "vega.secondary"),
-    )
-    with Live(spinner_text, console=console, refresh_per_second=12, transient=True):
+    with Live(Spinner(style, text=message, style="vega.accent"), console=console, refresh_per_second=12, transient=True):
         yield
 
 
