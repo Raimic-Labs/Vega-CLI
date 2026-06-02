@@ -1,0 +1,16 @@
+# Vega CLI — Core dependencies
+# Install: pip install -e .  or  pip install vega-raimic
+
+# ── CLI framework ─────────────────────────────
+typer[all]>=0.12.0          # CLI framework (includes rich, shellingham)
+
+# ── Terminal UI ───────────────────────────────
+rich>=13.7.0                # Rich terminal output (panels, tables, progress)
+
+# ── AI providers ─────────────────────────────
+openai>=1.30.0              # OpenAI-compatible SDK (NVIDIA NIM + DeepSeek)
+groq>=0.9.0                 # Groq LPU SDK
+google-genai>=1.0.0         # Google Gemini SDK (new unified SDK)
+
+# ── HTTP ──────────────────────────────────────
+httpx>=0.27.0               # Async HTTP client (used internally)
