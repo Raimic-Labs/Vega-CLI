@@ -1,0 +1,255 @@
+---
+title: "API Keys"
+description: "How to get free API keys for every provider and connect them to Vega."
+---
+
+# API Keys
+
+Vega works with AI models from multiple providers. Each provider requires an API key. The good news: **most providers offer free tiers** that are more than enough to get started.
+
+---
+
+## Why API Keys?
+
+Vega is a local CLI tool — it doesn't bundle its own AI infrastructure. Instead, it sends your prompts directly from your machine to the AI provider of your choice. This means:
+
+- ✅ **Your data goes directly to the provider** — not through Raimic Labs servers
+- ✅ **You control which provider you use**
+- ✅ **Free tiers from most providers** are sufficient for daily use
+- ✅ **Keys are stored locally** in `~/.vega/config.json` — never sent to us
+
+---
+
+## Free Keys Available
+
+| Provider | Models | Free Tier | Sign-up URL |
+|----------|--------|-----------|-------------|
+| **Google Gemini** | `gemini-2.5-pro`, `gemini-2.0-flash`, `gemini-1.5-pro` | 15 req/min, 1M tokens/day | [aistudio.google.com](https://aistudio.google.com) |
+| **Groq** | `llama-3.3-70b`, `llama-3.1-8b`, `mixtral-8x7b` | 14,400 req/day | [console.groq.com](https://console.groq.com) |
+| **DeepSeek** | `deepseek-chat`, `deepseek-coder` | $5 free credit | [platform.deepseek.com](https://platform.deepseek.com) |
+| **NVIDIA NIM** | `llama-3.1-nemotron-70b`, many others | 1000 req/month free | [build.nvidia.com](https://build.nvidia.com) |
+
+**Paid providers** (no meaningful free tier):
+
+| Provider | Models | Pricing |
+|----------|--------|---------|
+| **OpenAI** | `gpt-4o`, `gpt-4o-mini` | Pay-per-token |
+| **Anthropic** | `claude-3-5-sonnet`, `claude-3-haiku` | Pay-per-token |
+| **Mistral** | `mistral-large-latest` | Pay-per-token |
+
+---
+
+## How to Get Each Key
+
+### Google Gemini (Recommended — Free)
+
+Google Gemini is Vega's default model provider and the easiest to get started with.
+
+<Steps>
+  <Step title="Go to Google AI Studio">
+    Visit [aistudio.google.com](https://aistudio.google.com) and sign in with your Google account.
+  </Step>
+  <Step title="Get API Key">
+    Click **"Get API key"** in the left sidebar. Then click **"Create API key"**.
+  </Step>
+  <Step title="Select a project">
+    Select an existing Google Cloud project, or click **"Create API key in new project"** to create one automatically.
+  </Step>
+  <Step title="Copy the key">
+    Copy the API key that appears. It looks like: `AIzaSy...`
+  </Step>
+  <Step title="Add to Vega">
+    Inside Vega, type `/connect` and select **Google Gemini**, then paste your key.
+  </Step>
+</Steps>
+
+<Note>
+  The free tier for Gemini includes 15 requests per minute and up to 1 million tokens per day — plenty for active development use.
+</Note>
+
+---
+
+### Groq (Free — Fastest Inference)
+
+Groq provides ultra-fast inference via specialized hardware. Their free tier is generous.
+
+<Steps>
+  <Step title="Sign up at Groq">
+    Visit [console.groq.com](https://console.groq.com) and create a free account.
+  </Step>
+  <Step title="Navigate to API Keys">
+    In the left sidebar, click **"API Keys"**.
+  </Step>
+  <Step title="Create a key">
+    Click **"Create API Key"**, give it a name (e.g., "Vega"), and click **Create**.
+  </Step>
+  <Step title="Copy and save">
+    Copy the key immediately — it will only be shown once. It looks like: `gsk_...`
+  </Step>
+  <Step title="Add to Vega">
+    Inside Vega, type `/connect` and select **Groq**, then paste your key.
+  </Step>
+</Steps>
+
+---
+
+### DeepSeek (Free Credit)
+
+DeepSeek offers $5 free credit on signup — enough for hundreds of code generation sessions.
+
+<Steps>
+  <Step title="Visit DeepSeek Platform">
+    Go to [platform.deepseek.com](https://platform.deepseek.com) and create an account.
+  </Step>
+  <Step title="Verify your email">
+    Check your inbox and verify your email address.
+  </Step>
+  <Step title="Go to API Keys">
+    Once logged in, navigate to **API Keys** in the dashboard.
+  </Step>
+  <Step title="Create a new key">
+    Click **"Create new secret key"** and copy it. It looks like: `sk-...`
+  </Step>
+  <Step title="Add to Vega">
+    Inside Vega, type `/connect` and select **DeepSeek**, then paste your key.
+  </Step>
+</Steps>
+
+---
+
+### NVIDIA NIM (Free — 1000 req/month)
+
+NVIDIA NIM provides access to optimized open-source models running on NVIDIA infrastructure.
+
+<Steps>
+  <Step title="Go to NVIDIA Build">
+    Visit [build.nvidia.com](https://build.nvidia.com) and sign in or create an NVIDIA account.
+  </Step>
+  <Step title="Browse models">
+    Explore the model catalog and click on any model (e.g., `llama-3.1-nemotron-70b`).
+  </Step>
+  <Step title="Generate API key">
+    Click **"Get API Key"** on any model page. You may need to agree to terms.
+  </Step>
+  <Step title="Copy the key">
+    Copy your key. It looks like: `nvapi-...`
+  </Step>
+  <Step title="Add to Vega">
+    Inside Vega, type `/connect` and select **NVIDIA NIM**, then paste your key.
+  </Step>
+</Steps>
+
+---
+
+### OpenAI (Paid)
+
+<Steps>
+  <Step title="Sign up at OpenAI">
+    Go to [platform.openai.com](https://platform.openai.com) and create an account.
+  </Step>
+  <Step title="Add billing">
+    Navigate to **Settings → Billing** and add a payment method. Start with $5 credit.
+  </Step>
+  <Step title="Create API Key">
+    Go to **API Keys** and click **"Create new secret key"**. Copy it: `sk-...`
+  </Step>
+  <Step title="Add to Vega">
+    Inside Vega, type `/connect` and select **OpenAI**, then paste your key.
+  </Step>
+</Steps>
+
+---
+
+### Anthropic (Paid)
+
+<Steps>
+  <Step title="Sign up at Anthropic">
+    Go to [console.anthropic.com](https://console.anthropic.com) and create an account.
+  </Step>
+  <Step title="Add billing">
+    Navigate to **Plans & Billing** and add a payment method.
+  </Step>
+  <Step title="Create API Key">
+    Go to **API Keys** and click **"Create Key"**. Copy it: `sk-ant-...`
+  </Step>
+  <Step title="Add to Vega">
+    Inside Vega, type `/connect` and select **Anthropic**, then paste your key.
+  </Step>
+</Steps>
+
+---
+
+## Adding Keys to Vega
+
+Once you have a key, add it inside the Vega session:
+
+```
+You: /connect
+
+Select a provider to connect:
+  1. Google Gemini
+  2. OpenAI
+  3. Anthropic
+  4. Groq
+  5. DeepSeek
+  6. NVIDIA NIM
+  7. Mistral
+
+Enter number: 1
+Paste your Gemini API key: AIzaSy**************************
+
+✓ Gemini API key saved successfully.
+  Models available: gemini-2.5-pro, gemini-2.0-flash, gemini-1.5-pro
+```
+
+---
+
+## Config File Location
+
+All API keys are stored in plain text (locally encrypted) in your home directory:
+
+```
+~/.vega/config.json
+```
+
+Example config structure:
+
+```json
+{
+  "default_model": "gemini-2.5-pro",
+  "default_agent": "auto",
+  "api_keys": {
+    "gemini": "AIzaSy...",
+    "groq": "gsk_...",
+    "deepseek": "sk-...",
+    "openai": null,
+    "anthropic": null,
+    "nvidia": null
+  }
+}
+```
+
+<Warning>
+  Never share your `~/.vega/config.json` file or commit it to version control. API keys grant full access to your provider accounts.
+</Warning>
+
+---
+
+## Removing a Key
+
+To remove an API key, edit the config file directly:
+
+```bash
+nano ~/.vega/config.json
+```
+
+Or run `/connect` and re-enter the provider — leave the field blank and press Enter to clear it.
+
+---
+
+## Key Security
+
+- Keys are stored **only on your local machine**
+- Vega makes API calls **directly to providers** — no proxy through Raimic Labs
+- The `~/.vega/` directory is created with `700` permissions (owner-only access)
+- We recommend adding `~/.vega/` to your `.gitignore` if you work in home-directory repos

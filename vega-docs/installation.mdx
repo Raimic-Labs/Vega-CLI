@@ -1,0 +1,156 @@
+---
+title: "Installation"
+description: "Get Vega installed and running on your machine in under 2 minutes."
+---
+
+# Installation
+
+Vega is distributed as a Python package via PyPI. Install it with a single command and you're ready to start building.
+
+---
+
+## Requirements
+
+Before installing Vega, make sure you have the following:
+
+| Requirement | Minimum Version | Notes |
+|-------------|-----------------|-------|
+| Python | 3.9+ | Check with `python --version` or `python3 --version` |
+| pip | 21.0+ | Usually bundled with Python |
+| OS | Windows, macOS, Linux | See platform notes below |
+| Internet | Required | For AI model API calls |
+
+<Tip>
+  We recommend Python 3.11 or newer for the best performance and compatibility.
+</Tip>
+
+---
+
+## Install Vega
+
+Run the following command in your terminal:
+
+```bash
+pip install vega-raimic
+```
+
+This installs the `vega` command globally on your system along with all dependencies.
+
+### Install in a virtual environment (recommended)
+
+If you prefer to keep your environment clean:
+
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate it
+source venv/bin/activate        # macOS / Linux
+venv\Scripts\activate           # Windows
+
+# Install Vega
+pip install vega-raimic
+```
+
+### Upgrade an existing installation
+
+```bash
+pip install --upgrade vega-raimic
+```
+
+---
+
+## Verify Installation
+
+After installing, confirm Vega is available:
+
+```bash
+vega --version
+```
+
+You should see output like:
+
+```
+Vega v0.1.0 — by Raimic Labs
+```
+
+If you get a `command not found` error, see the [Troubleshooting](/troubleshooting) guide.
+
+---
+
+## First Launch
+
+Run `vega` to start the interactive session:
+
+```bash
+vega
+```
+
+On first launch, Vega will greet you with the startup screen and prompt you to connect an API key:
+
+```
+  ██╗   ██╗███████╗ ██████╗  █████╗
+  ██║   ██║██╔════╝██╔════╝ ██╔══██╗
+  ██║   ██║█████╗  ██║  ███╗███████║
+  ╚██╗ ██╔╝██╔══╝  ██║   ██║██╔══██║
+   ╚████╔╝ ███████╗╚██████╔╝██║  ██║
+    ╚═══╝  ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
+
+  Code at the speed of stars ✦
+  Powered by Raimic Labs
+
+⚠  No API key detected. Use /connect to add one.
+   Free keys available at: https://aistudio.google.com
+
+Model: gemini-2.5-pro  Agent: auto
+──────────────────────────────────────────
+You:
+```
+
+Type `/connect` to add your first API key. See [API Keys](/cli/api-keys) for how to get free keys.
+
+---
+
+## Supported Platforms
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| **macOS** (Monterey+) | ✅ Full support | Recommended development environment |
+| **Linux** (Ubuntu 20.04+, Debian, Arch) | ✅ Full support | Works great in headless servers too |
+| **Windows 10/11** | ✅ Supported | Use PowerShell or Windows Terminal for best experience |
+| **Windows WSL2** | ✅ Full support | Recommended over native Windows for power users |
+| **Termux (Android)** | 🧪 Experimental | Community supported |
+
+---
+
+## What Gets Installed
+
+When you run `pip install vega-raimic`, the following are installed:
+
+- `vega` — the main CLI binary
+- `rich` — for beautiful terminal rendering
+- `httpx` — for async HTTP requests to AI providers
+- `prompt_toolkit` — for the interactive shell experience
+- Provider SDKs (Google Generative AI, OpenAI, Anthropic, etc.)
+
+All configuration and API keys are stored locally in `~/.vega/config.json` — nothing is ever sent to Raimic Labs servers.
+
+---
+
+## Uninstall
+
+To remove Vega from your system:
+
+```bash
+pip uninstall vega-raimic
+```
+
+To also remove your saved configuration and API keys:
+
+```bash
+rm -rf ~/.vega
+```
+
+---
+
+**Next:** [Quickstart →](/quickstart)

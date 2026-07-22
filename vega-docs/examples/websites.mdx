@@ -1,0 +1,209 @@
+---
+title: "Building Websites"
+description: "Examples and walkthroughs for generating websites, landing pages, and portfolios with Vega."
+---
+
+# Building Websites with Vega
+
+Vega's **WebAgent** is purpose-built for generating clean, responsive, production-quality websites. From a single prompt, it produces complete HTML, CSS, and JavaScript files — ready to open in any browser.
+
+---
+
+## How It Works
+
+When you describe a website, the WebAgent:
+
+1. **Parses your design intent** — color schemes, layout preferences, content sections
+2. **Plans the file structure** — typically `index.html`, `style.css`, `script.js`
+3. **Generates each file** — with semantic HTML, modern CSS (Grid/Flexbox), and vanilla JS
+4. **Writes to your directory** — files land in a named subfolder in your working directory
+
+---
+
+## Example 1 — SaaS Landing Page
+
+**Prompt:**
+```
+Build a landing page for a SaaS product called "Notify" — a smart push notification 
+platform for mobile apps. Modern dark theme, teal accent color. Include: sticky navbar 
+with logo and CTA, hero section with headline and subheadline, 3 feature cards, 
+pricing table with 3 tiers, testimonials section, and footer with newsletter signup.
+```
+
+**What gets created:**
+```
+./notify-landing/
+├── index.html    (full semantic HTML structure)
+├── style.css     (dark theme, teal accents, responsive)
+└── script.js     (smooth scroll, mobile menu toggle, form validation)
+```
+
+**Key features generated:**
+- Sticky navigation with mobile hamburger menu
+- Hero with gradient text headline
+- CSS Grid feature cards with hover effects
+- Pricing cards with "Most Popular" badge
+- Testimonial carousel
+- Newsletter form with validation
+- Responsive breakpoints for tablet and mobile
+
+---
+
+## Example 2 — Freelance Portfolio
+
+**Prompt:**
+```
+Create a portfolio website for a UX designer named Priya Sharma. Minimalist aesthetic, 
+cream and warm gray palette, elegant serif typography. Include: about section with 
+skills list, project showcase with 4 case study cards (Fintech app, Healthcare portal, 
+E-commerce redesign, Travel booking), contact form, and a downloadable resume button.
+```
+
+**What gets created:**
+```
+./priya-sharma-portfolio/
+├── index.html
+├── style.css
+└── script.js
+```
+
+**Key features generated:**
+- Google Fonts integration (Playfair Display + Inter)
+- Masonry-style project grid
+- Each project card with tags (Figma, User Research, Prototyping)
+- Contact form with real-time validation feedback
+- Smooth reveal animations on scroll (Intersection Observer)
+
+---
+
+## Example 3 — Restaurant Website
+
+**Prompt:**
+```
+Build a restaurant website for "Ember & Oak" — an upscale steakhouse. Deep burgundy 
+and gold color scheme. Sections: hero with reservation CTA, menu preview (appetizers, 
+mains, desserts tabs), chef's story, photo gallery grid, hours & location with embedded 
+map placeholder, and footer.
+```
+
+**What gets created:**
+```
+./ember-oak-restaurant/
+├── index.html
+├── style.css
+└── script.js
+```
+
+**Key features generated:**
+- Tabbed menu system with animated tab switching
+- Photo gallery with lightbox on click
+- Reservation form with date/time picker
+- Responsive mobile navigation
+- CSS animations on section entrance
+
+---
+
+## Example 4 — Personal Blog
+
+**Prompt:**
+```
+Create a personal tech blog called "Debug Diaries" by developer Marcus Webb. Clean, 
+light theme, code-friendly. Include: header with search bar, featured post hero, 
+article card grid (6 cards with category tags, read time, date), sidebar with recent 
+posts and tag cloud, and newsletter subscription section.
+```
+
+**What gets created:**
+```
+./debug-diaries-blog/
+├── index.html
+├── style.css
+└── script.js
+```
+
+**Key features generated:**
+- Working client-side search that filters articles in real time
+- Category tag filtering (JavaScript, Python, Career, Tools)
+- Readable typography with proper line height and measure
+- Code syntax highlight styling in article previews
+- Dark/light mode toggle with localStorage persistence
+
+---
+
+## Example 5 — Countdown / Event Page
+
+**Prompt:**
+```
+Build a launch countdown page for a product called "Starforge" launching on March 1st, 
+2026. Space-themed dark design with particle starfield background, animated countdown 
+timer (days/hours/minutes/seconds), email capture form, and social share buttons for 
+X/Twitter and LinkedIn.
+```
+
+**What gets created:**
+```
+./starforge-launch/
+├── index.html
+├── style.css
+└── script.js
+```
+
+**Key features generated:**
+- Canvas-based animated starfield
+- Real-time countdown timer updating every second
+- Email capture with success/error states
+- OG meta tags for link previews when shared
+- Mobile-responsive full-screen layout
+
+---
+
+## Opening Your Generated Website
+
+After Vega generates files, open them immediately:
+
+```bash
+# macOS
+open ./notify-landing/index.html
+
+# Linux
+xdg-open ./notify-landing/index.html
+
+# Windows
+start ./notify-landing/index.html
+```
+
+Or use a simple local server for a more realistic preview:
+
+```bash
+# Python (built-in)
+cd notify-landing && python -m http.server 3000
+
+# Node.js (npx)
+cd notify-landing && npx serve .
+```
+
+Then open `http://localhost:3000` in your browser.
+
+---
+
+## Refining Your Website in Session
+
+You don't need to get everything perfect in one prompt. Iterate:
+
+```
+You: Change the hero section background to a dark gradient from #0a0a0a to #1a1a2e
+
+You: Add a "Trusted by 500+ teams" social proof line under the hero CTA
+
+You: Make the pricing cards animate in with a stagger effect on scroll
+
+You: Add a cookie consent banner at the bottom of the page
+```
+
+Each follow-up updates only what you ask — Vega preserves the rest.
+
+---
+
+<Tip>
+  For the best website output, mention: **color scheme**, **typography style**, **which sections to include**, and **the product/person's name and description**. The more context you give, the more tailored the result.
+</Tip>

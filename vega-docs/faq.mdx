@@ -1,0 +1,133 @@
+---
+title: "FAQ"
+description: "Frequently asked questions about Vega CLI."
+---
+
+# Frequently Asked Questions
+
+---
+
+### 1. Is Vega free to use?
+
+**Yes, Vega itself is completely free and open source.** You can install it, use it, and contribute to it at no cost.
+
+The only costs that may apply are API usage fees from AI providers — but most providers offer generous free tiers. Specifically:
+- **Google Gemini** — 15 req/min, 1M tokens/day, completely free
+- **Groq** — 14,400 requests/day, free
+- **DeepSeek** — $5 free credit on signup
+
+You can use Vega every day with these free tiers without ever paying anything.
+
+---
+
+### 2. Does Vega send my code or prompts to Raimic Labs?
+
+**No.** Vega is a local CLI tool that makes API calls directly from your machine to the AI provider you've configured. Raimic Labs does not have any servers in the middle of that request chain. Your prompts go from your terminal → directly to Google/OpenAI/Anthropic/etc.
+
+We never see your prompts, your generated code, or your API keys.
+
+---
+
+### 3. Where are my API keys stored?
+
+API keys are stored locally in `~/.vega/config.json` on your machine. This file:
+- Is created with restricted permissions (`chmod 600`)
+- Never leaves your computer
+- Is not synced anywhere by Vega
+
+You should add `~/.vega/` to your `.gitignore` if you work in a home-directory repository.
+
+---
+
+### 4. Can I use Vega offline?
+
+No. Vega requires an internet connection to make API calls to AI model providers. There is no offline/local model support in the current version, though we plan to add Ollama integration for local models in a future release.
+
+---
+
+### 5. What's the difference between Vega and GitHub Copilot?
+
+| | Vega | GitHub Copilot |
+|--|------|----------------|
+| **Interface** | Terminal / CLI | IDE plugin |
+| **Task scope** | Full project generation | Line-by-line autocomplete |
+| **Multi-model** | ✅ 14+ models | Limited |
+| **Cost** | Free (bring own keys) | $10–19/month |
+| **Output** | Full files to disk | Suggestions in editor |
+| **Best for** | Spinning up new projects fast | Writing code in existing projects |
+
+They serve different purposes and work great together — use Vega to scaffold a project, then use Copilot while editing it.
+
+---
+
+### 6. Can I use Vega inside an existing project?
+
+Yes. Vega writes files to your **current working directory** (wherever your terminal is). Navigate to your project folder before starting Vega and all generated files will land there.
+
+```bash
+cd ~/projects/my-existing-app
+vega
+# All output goes to ~/projects/my-existing-app/
+```
+
+---
+
+### 7. Which model should I start with?
+
+Start with the default: **`gemini-2.5-pro`**. It's free, capable, and works well across all task types. Get a free Gemini API key at [aistudio.google.com](https://aistudio.google.com) in under 2 minutes.
+
+Once you're comfortable, experiment with other models — especially Groq-hosted LLaMA for speed, or Claude for backend/API work.
+
+---
+
+### 8. Can Vega read and modify my existing code files?
+
+Currently, Vega generates new files from scratch based on your prompts. It doesn't automatically read existing files in your project.
+
+You can **paste existing code into the prompt** to give it context:
+
+```
+You: Here's my existing Flask app:
+
+[paste your code here]
+
+Add a /health endpoint that returns {"status": "ok", "timestamp": <current_time>}
+```
+
+Direct file reading and editing (without pasting) is a planned feature for a future version.
+
+---
+
+### 9. What happens if the generated code doesn't work?
+
+Paste the error back into Vega:
+
+```
+You: I got this error when running the code:
+
+TypeError: Cannot read properties of undefined (reading 'map')
+at TodoList.jsx:23
+
+Please fix it.
+```
+
+Vega will diagnose and fix the issue. You can iterate like this as many times as needed.
+
+---
+
+### 10. How do I contribute to Vega?
+
+Vega is open source and we welcome contributions! Here's how to get involved:
+
+1. **Star the repo** — [github.com/Raimic-Labs/Vega-CLI](https://github.com/Raimic-Labs/Vega-CLI)
+2. **Report bugs** — Open an issue with reproduction steps
+3. **Request features** — Open a feature request issue
+4. **Submit a PR** — Fork the repo, make your change, and open a pull request
+
+Check the `CONTRIBUTING.md` in the repository for development setup instructions, code style guidelines, and the PR review process.
+
+---
+
+<Note>
+  Have a question that isn't answered here? Open a [GitHub Discussion](https://github.com/Raimic-Labs/Vega-CLI/discussions) and the team will respond.
+</Note>

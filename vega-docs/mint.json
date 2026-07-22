@@ -1,0 +1,51 @@
+{
+  "name": "Vega",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#00FFFF",
+    "light": "#00FFFF",
+    "dark": "#000000"
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/Raimic-Labs/Vega-CLI"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "/installation"
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction", "installation", "quickstart"]
+    },
+    {
+      "group": "CLI",
+      "pages": ["cli/commands", "cli/agents", "cli/models", "cli/api-keys"]
+    },
+    {
+      "group": "What You Can Build",
+      "pages": ["examples/websites", "examples/apps", "examples/apis"]
+    },
+    {
+      "group": "Help",
+      "pages": ["troubleshooting", "faq", "changelog"]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/Raimic-Labs"
+  },
+  "modeToggle": {
+    "default": "dark"
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true
+  }
+}

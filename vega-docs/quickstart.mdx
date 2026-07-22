@@ -1,0 +1,182 @@
+---
+title: "Quickstart"
+description: "Go from zero to your first AI-generated project in under 5 minutes."
+---
+
+# Quickstart
+
+This guide walks you through launching Vega for the first time and building your first project with a single prompt.
+
+---
+
+## Step 1 — Launch Vega
+
+Open your terminal and start the interactive session:
+
+```bash
+vega
+```
+
+You'll see the Vega splash screen and the interactive prompt:
+
+```
+  ██╗   ██╗███████╗ ██████╗  █████╗
+  Code at the speed of stars ✦
+  Powered by Raimic Labs
+
+Model: gemini-2.5-pro  Agent: auto
+──────────────────────────────────────────
+You: 
+```
+
+---
+
+## Step 2 — Your First Prompt
+
+Try a simple prompt to get a feel for Vega's capabilities:
+
+```
+You: Write a Python function that converts Celsius to Fahrenheit and Kelvin
+```
+
+Vega will respond:
+
+```
+🐍 CodeAgent activated
+✦ Generating...
+
+def celsius_to_fahrenheit(c):
+    return (c * 9/5) + 32
+
+def celsius_to_kelvin(c):
+    return c + 273.15
+
+def convert_temperature(celsius):
+    return {
+        "fahrenheit": celsius_to_fahrenheit(celsius),
+        "kelvin": celsius_to_kelvin(celsius)
+    }
+
+# Example
+print(convert_temperature(100))
+# {'fahrenheit': 212.0, 'kelvin': 373.15}
+```
+
+Vega writes this to a file called `temperature_converter.py` in your current directory.
+
+---
+
+## Step 3 — Build Your First Website
+
+Now let's try something bigger. Tell Vega to build a complete website:
+
+```
+You: Build a portfolio website for a freelance designer named Alex Chen. 
+     Include a hero section, about me, projects gallery with 3 sample projects, 
+     and a contact form. Make it dark themed with purple accents.
+```
+
+### What happens step by step:
+
+<Steps>
+  <Step title="Intent Analysis">
+    Vega reads your prompt and identifies this as a web project. It automatically routes to the **WebAgent**, which is specialized in HTML, CSS, and JavaScript.
+  </Step>
+  <Step title="Planning">
+    The agent plans the file structure it needs to create:
+    ```
+    alex-chen-portfolio/
+    ├── index.html
+    ├── style.css
+    └── script.js
+    ```
+  </Step>
+  <Step title="Generation">
+    The agent generates each file in sequence, building a fully functional static website with:
+    - Responsive hero section with name and tagline
+    - About section with placeholder bio
+    - Projects gallery with CSS grid layout
+    - Contact form with basic validation
+    - Dark theme with purple gradient accents
+  </Step>
+  <Step title="File Output">
+    All files are written to `./alex-chen-portfolio/` in your current working directory. You'll see a confirmation:
+    ```
+    ✦ Done! Created 3 files in ./alex-chen-portfolio/
+    📂 index.html  (4.2 KB)
+    📂 style.css   (3.1 KB)
+    📂 script.js   (1.8 KB)
+
+    Open index.html in your browser to preview.
+    ```
+  </Step>
+  <Step title="Open & Preview">
+    Open the site in your browser:
+    ```bash
+    # macOS
+    open alex-chen-portfolio/index.html
+
+    # Linux
+    xdg-open alex-chen-portfolio/index.html
+
+    # Windows
+    start alex-chen-portfolio/index.html
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Step 4 — Iterate and Refine
+
+Vega keeps context across your session. You can follow up naturally:
+
+```
+You: Add a skills section after the about section — include HTML, CSS, JavaScript, Figma, and React
+
+🌐 WebAgent activated
+✦ Updating index.html and style.css...
+✦ Done! Skills section added.
+```
+
+```
+You: Change the accent color from purple to cyan
+
+🌐 WebAgent activated
+✦ Updating style.css — 14 color references updated.
+✦ Done!
+```
+
+---
+
+## Useful First Commands
+
+| Command | What it does |
+|---------|--------------|
+| `/connect` | Add or update an API key |
+| `/model` | Switch the AI model being used |
+| `/agents` | Show all available agents |
+| `/clear` | Clear the screen and conversation history |
+| `/save` | Save the current session to a file |
+| `/help` | Show all available slash commands |
+| `exit` or `Ctrl+C` | Quit Vega |
+
+---
+
+## Tips for Better Results
+
+<Tip>
+  **Be specific.** "Build a landing page for a SaaS product called PulseTrack, a fitness analytics tool, with a navbar, hero, 3 feature cards, and a CTA button" will give you far better results than "make a website".
+</Tip>
+
+<Tip>
+  **Name your stack.** If you want React, say "React". If you want Flask, say "Flask". Vega respects your tech choices.
+</Tip>
+
+<Tip>
+  **Iterate in session.** Don't try to put everything in one prompt. Build incrementally — add sections, change colors, fix bugs — Vega holds context through the whole conversation.
+</Tip>
+
+---
+
+**Next:** [CLI Commands →](/cli/commands)

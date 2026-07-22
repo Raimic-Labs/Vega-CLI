@@ -1,0 +1,239 @@
+---
+title: "Commands"
+description: "Complete reference for all Vega CLI commands and in-chat slash commands."
+---
+
+# CLI Commands
+
+Vega has two types of commands: **shell commands** (run from your terminal before launching Vega) and **slash commands** (typed inside the Vega interactive session).
+
+---
+
+## Shell Commands
+
+These are run directly from your terminal:
+
+| Command | Description |
+|---------|-------------|
+| `vega` | Start the interactive Vega session |
+| `vega --version` | Show the installed Vega version |
+| `vega --help` | Show help and available flags |
+| `vega --model <name>` | Start with a specific model pre-selected |
+| `vega --agent <name>` | Start with a specific agent pre-selected |
+| `vega --no-color` | Disable colored terminal output |
+| `vega --debug` | Enable verbose debug logging |
+
+### Examples
+
+```bash
+# Start normally
+vega
+
+# Start with a specific model
+vega --model gpt-4o
+
+# Start with the web agent forced
+vega --agent web
+
+# Debug mode (useful for reporting issues)
+vega --debug
+```
+
+---
+
+## In-Session Slash Commands
+
+Once inside the Vega interactive shell, you can use these slash commands at any prompt:
+
+### `/connect`
+
+Add or update an API key for a provider.
+
+```
+You: /connect
+```
+
+Vega will display an interactive menu:
+
+```
+Select a provider to connect:
+  1. Google Gemini
+  2. OpenAI (GPT-4o)
+  3. Anthropic (Claude)
+  4. Groq (LLaMA / Mistral)
+  5. DeepSeek
+  6. NVIDIA NIM
+
+Enter number: 1
+Paste your API key: ****************************
+
+✓ Gemini API key saved.
+```
+
+---
+
+### `/model`
+
+Switch the AI model mid-conversation.
+
+```
+You: /model
+```
+
+```
+Available models:
+  1. gemini-2.5-pro          [Google]     ← current
+  2. gemini-2.0-flash
+  3. gpt-4o                  [OpenAI]
+  4. gpt-4o-mini
+  5. claude-3-5-sonnet       [Anthropic]
+  6. llama-3.3-70b-versatile [Groq]
+  7. deepseek-chat            [DeepSeek]
+  8. mistral-large-latest     [Mistral]
+
+Enter number or model name: 3
+
+✓ Switched to gpt-4o
+```
+
+You can also switch inline:
+
+```
+You: /model gpt-4o
+✓ Switched to gpt-4o
+```
+
+---
+
+### `/agent`
+
+Manually override the automatic agent routing.
+
+```
+You: /agent web
+✓ Agent locked to: WebAgent 🌐
+
+You: /agent auto
+✓ Agent set to: auto-routing
+```
+
+Available agent names: `web`, `app`, `code`, `backend`, `data`, `general`
+
+---
+
+### `/agents`
+
+Display all available agents and their descriptions.
+
+```
+You: /agents
+
+Available Agents:
+─────────────────────────────────────────────────
+🌐  WebAgent     — HTML, CSS, JS, landing pages, portfolios
+📱  AppAgent     — React, Vue, mobile-style app UIs
+🐍  CodeAgent    — Python scripts, algorithms, utilities
+⚙️  BackendAgent — REST APIs, Node.js, Flask, databases
+📊  DataAgent    — data analysis, CSV processing, charts
+🤖  GeneralAgent — catch-all: questions, planning, writing
+─────────────────────────────────────────────────
+```
+
+---
+
+### `/clear`
+
+Clear the terminal screen and reset the conversation history for the current session.
+
+```
+You: /clear
+✓ Screen cleared. Conversation history reset.
+```
+
+---
+
+### `/save`
+
+Save the current conversation and all generated code to a session log file.
+
+```
+You: /save
+✓ Session saved to: ~/.vega/sessions/session-2025-01-15-14-32.json
+```
+
+---
+
+### `/history`
+
+Show the last 10 messages in the current session.
+
+```
+You: /history
+
+Session History (last 10 messages):
+─────────────────────────────────────
+[1] You: Build a landing page for FlowBoard...
+[2] Vega: 🌐 WebAgent — Generated 3 files...
+[3] You: Add a pricing section
+[4] Vega: 🌐 WebAgent — Updated index.html...
+─────────────────────────────────────
+```
+
+---
+
+### `/status`
+
+Show the current session status — active model, agent, and API key info.
+
+```
+You: /status
+
+Session Status:
+─────────────────────────────────────
+Model:    gemini-2.5-pro (Google)
+Agent:    auto-routing
+Key:      Gemini ✓  OpenAI ✓  Groq ✓
+Messages: 12 in session
+─────────────────────────────────────
+```
+
+---
+
+### `/help`
+
+Display all available slash commands with descriptions.
+
+```
+You: /help
+```
+
+---
+
+### `exit`
+
+Quit the Vega session gracefully.
+
+```
+You: exit
+Goodbye. Code at the speed of stars ✦
+```
+
+You can also press `Ctrl+C` or `Ctrl+D` to exit.
+
+---
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `↑` / `↓` | Navigate prompt history |
+| `Ctrl+C` | Cancel current generation or exit |
+| `Ctrl+D` | Exit session |
+| `Ctrl+L` | Clear screen (without resetting history) |
+| `Tab` | Autocomplete slash commands |
+
+---
+
+<Note>
+  Slash commands are only available inside the interactive Vega session. They won't work in a standard shell.
+</Note>

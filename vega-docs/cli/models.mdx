@@ -1,0 +1,167 @@
+---
+title: "Models"
+description: "All supported AI models in Vega, how to switch between them, and which model to use for what."
+---
+
+# Models
+
+Vega supports a wide range of AI models from multiple providers. You can use free-tier models to get started at no cost, or bring premium API keys for the most capable models available.
+
+---
+
+## Supported Models
+
+| Model | Provider | Context | Best For | Cost |
+|-------|----------|---------|----------|------|
+| `gemini-2.5-pro` | Google | 1M tokens | Complex reasoning, long code, multi-file projects | Free tier available |
+| `gemini-2.0-flash` | Google | 1M tokens | Fast responses, general chat, quick scripts | Free tier available |
+| `gemini-1.5-pro` | Google | 2M tokens | Very long context, large codebases | Free tier available |
+| `gpt-4o` | OpenAI | 128K tokens | Excellent code quality, React, complex apps | Paid |
+| `gpt-4o-mini` | OpenAI | 128K tokens | Fast, affordable, good for simple tasks | Paid (cheap) |
+| `claude-3-5-sonnet` | Anthropic | 200K tokens | Backend, APIs, security-aware code | Paid |
+| `claude-3-haiku` | Anthropic | 200K tokens | Fast Claude responses | Paid |
+| `llama-3.3-70b-versatile` | Groq | 128K tokens | Ultra-fast inference, free | Free tier |
+| `llama-3.1-8b-instant` | Groq | 128K tokens | Instant responses, lightweight tasks | Free tier |
+| `mixtral-8x7b-32768` | Groq | 32K tokens | Balanced speed and quality | Free tier |
+| `deepseek-chat` | DeepSeek | 128K tokens | Code generation, math, reasoning | Free tier |
+| `deepseek-coder` | DeepSeek | 128K tokens | Specialized for code | Free tier |
+| `mistral-large-latest` | Mistral | 128K tokens | European privacy, multilingual | Paid |
+| `nvidia/llama-3.1-nemotron-70b` | NVIDIA NIM | 128K tokens | Advanced reasoning, free | Free tier |
+
+---
+
+## Default Model
+
+Vega starts with **`gemini-2.5-pro`** as the default model. It offers the best balance of:
+- Code quality and reasoning depth
+- Long context window (up to 1M tokens)
+- Free-tier availability via Google AI Studio
+
+---
+
+## How to Switch Models
+
+### Option 1: Switch inside Vega session
+
+Type `/model` to see the interactive model picker:
+
+```
+You: /model
+
+Available Models:
+──────────────────────────────────────────────────
+  [1] gemini-2.5-pro          Google    ← active
+  [2] gemini-2.0-flash        Google
+  [3] gpt-4o                  OpenAI
+  [4] gpt-4o-mini             OpenAI
+  [5] claude-3-5-sonnet       Anthropic
+  [6] claude-3-haiku          Anthropic
+  [7] llama-3.3-70b-versatile Groq
+  [8] deepseek-chat           DeepSeek
+  [9] mistral-large-latest    Mistral
+──────────────────────────────────────────────────
+Enter number or model name:
+```
+
+### Option 2: Switch inline by name
+
+```
+You: /model gpt-4o
+✓ Switched to gpt-4o
+
+You: /model deepseek-coder
+✓ Switched to deepseek-coder
+```
+
+### Option 3: Start Vega with a specific model
+
+```bash
+vega --model claude-3-5-sonnet
+```
+
+---
+
+## Which Model Should I Use?
+
+### For most users — `gemini-2.5-pro`
+
+The default choice. Excellent code quality, huge context window, and available for free via Google AI Studio. Use this unless you have a specific reason to switch.
+
+### For React / Frontend apps — `gpt-4o`
+
+OpenAI's GPT-4o has been trained heavily on JavaScript and React patterns. It produces clean, idiomatic React code with excellent component structure.
+
+### For Backend / APIs / Security — `claude-3-5-sonnet`
+
+Claude is known for producing safe, secure backend code. It excels at edge case handling, input validation, and clear error messages.
+
+### For maximum speed — `llama-3.3-70b-versatile` (Groq)
+
+Groq's hardware provides dramatically faster inference — responses in under 1 second. Use this when you want near-instant output for simpler tasks.
+
+### For code-specific tasks — `deepseek-coder`
+
+DeepSeek Coder is purpose-built for code generation and performs exceptionally well on algorithmic problems, data structures, and multi-language code tasks.
+
+### For very long context — `gemini-1.5-pro`
+
+If you're working with a large existing codebase, need to paste in many files, or have a very complex project that requires remembering lots of context, Gemini 1.5 Pro's 2M token window is unmatched.
+
+---
+
+## Model Availability by Agent
+
+Each agent has a default model, but you can use any model with any agent:
+
+| Agent | Default Model | Why |
+|-------|---------------|-----|
+| 🌐 WebAgent | `gemini-2.5-pro` | Great HTML/CSS/JS quality |
+| 📱 AppAgent | `gpt-4o` | Best React/Vue output |
+| 🐍 CodeAgent | `gemini-2.5-pro` | Excellent Python |
+| ⚙️ BackendAgent | `claude-3-5-sonnet` | Secure, robust APIs |
+| 📊 DataAgent | `gemini-2.5-pro` | Strong with Pandas/data |
+| 🤖 GeneralAgent | `gemini-2.0-flash` | Fast for conversational |
+
+---
+
+## Adding API Keys for Models
+
+Models require an API key from the corresponding provider. See [API Keys →](/cli/api-keys) for step-by-step instructions to get free keys for every provider.
+
+```
+You: /connect
+
+Select a provider to connect:
+  1. Google Gemini   (for gemini-* models)
+  2. OpenAI          (for gpt-* models)
+  3. Anthropic       (for claude-* models)
+  4. Groq            (for llama-*, mixtral-* models)
+  5. DeepSeek        (for deepseek-* models)
+  6. NVIDIA NIM      (for nvidia/* models)
+  7. Mistral         (for mistral-* models)
+```
+
+---
+
+## Checking Your Current Model
+
+At any time, check which model is active:
+
+```
+You: /status
+
+Session Status:
+─────────────────────────────────────
+Model:    gpt-4o (OpenAI)
+Agent:    AppAgent 📱
+Keys:     Gemini ✓  OpenAI ✓  Groq ✓
+─────────────────────────────────────
+```
+
+The active model is also always shown in the header bar of the Vega prompt:
+
+```
+Model: gpt-4o  Agent: app
+──────────────────────────────────────────
+You:
+```

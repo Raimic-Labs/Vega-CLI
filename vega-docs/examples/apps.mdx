@@ -1,0 +1,260 @@
+---
+title: "Building Apps"
+description: "Examples for generating React apps, Node.js backends, Python tools, and more with Vega."
+---
+
+# Building Apps with Vega
+
+Vega can generate full-stack applications, framework-based frontends, server-side projects, and command-line tools. The **AppAgent**, **BackendAgent**, and **CodeAgent** handle these tasks depending on the tech stack.
+
+---
+
+## Example 1 — React Todo App with Drag & Drop
+
+**Prompt:**
+```
+Build a React todo app with Vite. Features: add/edit/delete tasks, drag-and-drop 
+reordering, priority levels (low/medium/high) shown with color labels, dark mode 
+toggle, and localStorage persistence so tasks survive a page refresh.
+```
+
+**Agent:** 📱 AppAgent  
+**Stack:** React 18 + Vite
+
+**What gets created:**
+```
+./react-todo-app/
+├── src/
+│   ├── App.jsx
+│   ├── components/
+│   │   ├── TodoList.jsx
+│   │   ├── TodoItem.jsx
+│   │   ├── AddTodo.jsx
+│   │   └── DarkModeToggle.jsx
+│   ├── hooks/
+│   │   ├── useTodos.js
+│   │   └── useDarkMode.js
+│   └── index.css
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+**Key features:**
+- Drag-and-drop via native HTML5 Drag API
+- React `useState` + `useEffect` for state management
+- `localStorage` sync on every change
+- Priority badges with red/amber/green colors
+- Smooth CSS transitions for dark mode switch
+
+**To run:**
+```bash
+cd react-todo-app
+npm install
+npm run dev
+```
+
+---
+
+## Example 2 — Vue 3 Analytics Dashboard
+
+**Prompt:**
+```
+Create a Vue 3 dashboard with Vite. Left sidebar navigation with icons, top stats 
+row (Total Users, Revenue, Orders, Conversion Rate), a line chart for monthly revenue 
+(last 12 months), a bar chart for weekly orders, and a recent transactions table 
+with status badges. Use mock data.
+```
+
+**Agent:** 📱 AppAgent  
+**Stack:** Vue 3 + Vite + Chart.js
+
+**What gets created:**
+```
+./vue-dashboard/
+├── src/
+│   ├── App.vue
+│   ├── components/
+│   │   ├── Sidebar.vue
+│   │   ├── StatsRow.vue
+│   │   ├── RevenueChart.vue
+│   │   ├── OrdersChart.vue
+│   │   └── TransactionsTable.vue
+│   ├── data/
+│   │   └── mockData.js
+│   └── main.js
+├── package.json
+└── vite.config.js
+```
+
+---
+
+## Example 3 — Python CLI Tool (File Organizer)
+
+**Prompt:**
+```
+Write a Python command-line tool that organizes files in a given directory. 
+It should move files into subfolders based on extension (Images/, Videos/, 
+Documents/, Code/, Other/). Add a --dry-run flag to preview what would happen 
+without actually moving files. Show a progress bar using tqdm.
+```
+
+**Agent:** 🐍 CodeAgent  
+**Stack:** Python 3.9+
+
+**What gets created:**
+```
+./file-organizer/
+├── organizer.py
+├── requirements.txt
+└── README.md
+```
+
+**Usage:**
+```bash
+# Preview (dry run)
+python organizer.py ~/Downloads --dry-run
+
+# Actually organize
+python organizer.py ~/Downloads
+
+# Example output:
+Scanning 247 files...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 247/247 files
+
+Moved 89 → Images/
+Moved 34 → Documents/
+Moved 12 → Videos/
+Moved 67 → Code/
+Moved 45 → Other/
+
+Done! 247 files organized.
+```
+
+---
+
+## Example 4 — Node.js REST API
+
+**Prompt:**
+```
+Build a Node.js REST API with Express for a bookmarks manager. Endpoints: 
+GET /bookmarks, POST /bookmarks, DELETE /bookmarks/:id, PUT /bookmarks/:id. 
+Store data in a local JSON file. Add basic input validation, meaningful error 
+messages, and CORS headers. Include a README with curl examples.
+```
+
+**Agent:** ⚙️ BackendAgent  
+**Stack:** Node.js + Express
+
+**What gets created:**
+```
+./bookmarks-api/
+├── server.js
+├── routes/
+│   └── bookmarks.js
+├── middleware/
+│   └── validation.js
+├── data/
+│   └── bookmarks.json
+├── package.json
+└── README.md
+```
+
+**Sample API calls from the README:**
+```bash
+# Get all bookmarks
+curl http://localhost:3000/bookmarks
+
+# Add a bookmark
+curl -X POST http://localhost:3000/bookmarks \
+  -H "Content-Type: application/json" \
+  -d '{"title": "MDN Web Docs", "url": "https://developer.mozilla.org", "tags": ["reference", "web"]}'
+
+# Delete a bookmark
+curl -X DELETE http://localhost:3000/bookmarks/1
+```
+
+---
+
+## Example 5 — Python Data Analysis Script
+
+**Prompt:**
+```
+Write a Python data analysis script for a CSV file of e-commerce orders. 
+The script should: load the CSV, show basic stats (rows, columns, nulls), 
+calculate monthly revenue, identify the top 10 products by revenue, find 
+the busiest days of the week, and generate 3 matplotlib charts saved as PNGs.
+```
+
+**Agent:** 📊 DataAgent  
+**Stack:** Python + Pandas + Matplotlib
+
+**What gets created:**
+```
+./ecommerce-analysis/
+├── analyze.py
+├── requirements.txt
+└── README.md
+```
+
+**Usage:**
+```bash
+pip install -r requirements.txt
+python analyze.py orders.csv
+
+# Output:
+Dataset Overview:
+  Rows: 15,482   Columns: 8   Null values: 23
+
+Monthly Revenue Summary:
+  Jan 2024: $124,830
+  Feb 2024: $98,210
+  ...
+
+Top 10 Products saved → top_products.png
+Monthly Revenue chart → monthly_revenue.png
+Day-of-week traffic → weekly_pattern.png
+```
+
+---
+
+## Running Generated Apps
+
+### React / Vue apps (Vite)
+```bash
+cd your-app
+npm install
+npm run dev
+# Opens at http://localhost:5173
+```
+
+### Node.js servers
+```bash
+cd your-api
+npm install
+node server.js
+# Listening at http://localhost:3000
+```
+
+### Python scripts
+```bash
+cd your-script
+pip install -r requirements.txt
+python main.py
+```
+
+---
+
+## Tips for Better App Generation
+
+<Tip>
+  **Specify the stack explicitly.** "React with Vite" vs "React with Create React App" produces different boilerplate. Be explicit.
+</Tip>
+
+<Tip>
+  **Mention the data model.** For apps that need a schema (todo items, users, products), describe the fields you want. This gives the agent enough to generate proper types and structures.
+</Tip>
+
+<Tip>
+  **Ask for a README.** Vega will include a `README.md` with install and run instructions if you ask. Especially useful when sharing the project.
+</Tip>

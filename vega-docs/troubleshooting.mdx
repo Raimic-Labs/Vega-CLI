@@ -1,0 +1,270 @@
+---
+title: "Troubleshooting"
+description: "Common issues and fixes for Vega CLI installation, API keys, and usage."
+---
+
+# Troubleshooting
+
+Having trouble with Vega? This guide covers the most common issues and how to fix them.
+
+---
+
+## Installation Issues
+
+### `command not found: vega`
+
+After running `pip install vega-raimic`, the `vega` command isn't recognized.
+
+**Cause:** Python's `Scripts` (Windows) or `bin` (macOS/Linux) directory isn't in your `PATH`.
+
+**Fix on macOS/Linux:**
+```bash
+# Find where pip installs binaries
+python -m site --user-base
+
+# Add to your shell profile (~/.zshrc or ~/.bashrc)
+export PATH="$HOME/.local/bin:$PATH"
+
+# Reload your profile
+source ~/.zshrc
+```
+
+**Fix on Windows (PowerShell):**
+```powershell
+# Add Python Scripts to PATH
+$env:PATH += ";$env:APPDATA\Python\Python311\Scripts"
+
+# Or permanently via System Properties → Environment Variables
+```
+
+**Alternative fix:** Run Vega as a module:
+```bash
+python -m vega
+```
+
+---
+
+### `ModuleNotFoundError` on launch
+
+```
+ModuleNotFoundError: No module named 'rich'
+```
+
+**Cause:** The installation was incomplete or used a different Python environment.
+
+**Fix:**
+```bash
+pip install --upgrade vega-raimic
+
+# If using multiple Python versions, be explicit:
+python3 -m pip install vega-raimic
+```
+
+---
+
+### Vega installed but very old version runs
+
+```bash
+vega --version
+# Shows: Vega v0.0.1  ← old version
+```
+
+**Cause:** An old version is earlier in `PATH` than the new one.
+
+**Fix:**
+```bash
+pip install --upgrade vega-raimic
+
+# Verify you're running the right one
+which vega
+```
+
+---
+
+### Permission denied on install
+
+```
+ERROR: Could not install packages due to an OSError: [Errno 13] Permission denied
+```
+
+**Fix:** Don't use `sudo`. Instead, install for the current user:
+```bash
+pip install --user vega-raimic
+```
+
+---
+
+## API Key Issues
+
+### `AuthenticationError: Invalid API key`
+
+**Cause:** The API key was entered incorrectly, expired, or belongs to a different account.
+
+**Fix:**
+1. Go to your provider's dashboard and verify the key is still active
+2. In Vega, run `/connect` and re-enter the key carefully (no extra spaces)
+3. Make sure you're using the right key for the right provider
+
+---
+
+### `RateLimitError: Too many requests`
+
+**Cause:** You've exceeded the free tier rate limit for your provider.
+
+**Fix:**
+- Wait 60 seconds and try again (most limits reset per minute)
+- Switch to a different model/provider with `/model`
+- Upgrade to a paid tier if you need higher throughput
+
+```
+You: /model llama-3.3-70b-versatile
+```
+Groq's free tier is very generous and rarely rate-limited.
+
+---
+
+### `No API key configured` on first launch
+
+Vega shows a warning that no key is set up.
+
+**Fix:** Run `/connect` inside Vega and follow the prompts to add a free Gemini key. See [API Keys →](/cli/api-keys) for step-by-step instructions.
+
+---
+
+### Keys disappeared after reinstall
+
+**Cause:** Reinstalling Vega doesn't touch `~/.vega/config.json`, but if you deleted it manually or upgraded Python versions, keys may be lost.
+
+**Fix:** Check if your config file exists:
+```bash
+cat ~/.vega/config.json
+```
+
+If it's empty or missing, run `/connect` to re-add your keys.
+
+---
+
+## Generation Issues
+
+### Vega generates incomplete code
+
+**Cause:** Long responses can sometimes be truncated by the model's output limit.
+
+**Fix:**
+```
+You: Continue from where you left off and complete the remaining code
+```
+
+Or break your request into smaller parts:
+```
+You: First just generate the HTML structure for the landing page
+You: Now add the CSS styles
+You: Now add the JavaScript interactivity
+```
+
+---
+
+### Generated code has errors / doesn't run
+
+**Cause:** No AI model is perfect — especially for complex multi-file projects.
+
+**Fix:** Tell Vega about the error:
+```
+You: I got this error when running the code: [paste error here]
+     Please fix it.
+```
+
+Vega will analyze the error and produce a corrected version.
+
+---
+
+### Wrong agent activated
+
+The WebAgent was used for something that needed the BackendAgent.
+
+**Fix:** Override routing manually:
+```
+You: /agent backend
+You: Now build a REST API for...
+```
+
+---
+
+### Vega response is very slow
+
+**Cause:** Heavier models like `gemini-2.5-pro` or `claude-3-5-sonnet` take longer for complex prompts.
+
+**Fix:** Switch to a faster model for simpler tasks:
+```
+You: /model llama-3.3-70b-versatile
+```
+Groq-hosted models respond in under 2 seconds for most requests.
+
+---
+
+## Platform-Specific Issues
+
+### Windows: Terminal shows garbled characters
+
+**Cause:** Windows Command Prompt doesn't support Unicode/emoji rendering.
+
+**Fix:** Use Windows Terminal (from the Microsoft Store) or PowerShell 7+ which have full UTF-8 support.
+
+```powershell
+# Enable UTF-8 in older PowerShell
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+```
+
+Or run Vega with no-color mode:
+```bash
+vega --no-color
+```
+
+---
+
+### macOS: `zsh: command not found: vega`
+
+**Fix:**
+```bash
+# Check if pip installed to user bin
+ls ~/.local/bin/vega
+
+# Add to .zshrc
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+---
+
+### Linux: SSL certificate errors
+
+```
+ssl.SSLCertVerificationError
+```
+
+**Fix:**
+```bash
+# Update certificates
+sudo apt-get update && sudo apt-get install ca-certificates
+
+# Or install certifi
+pip install --upgrade certifi
+```
+
+---
+
+## Getting Help
+
+If your issue isn't covered here:
+
+1. **Check the [FAQ →](/faq)** — common questions answered
+2. **Open a GitHub Issue** — [github.com/Raimic-Labs/Vega-CLI/issues](https://github.com/Raimic-Labs/Vega-CLI/issues)
+3. **Run with debug mode** for detailed logs:
+   ```bash
+   vega --debug
+   ```
+   Copy the output when filing a bug report — it includes version, model, and request details.
+
+<Note>
+  When filing a bug report, always include: your OS, Python version (`python --version`), Vega version (`vega --version`), and the full error message.
+</Note>

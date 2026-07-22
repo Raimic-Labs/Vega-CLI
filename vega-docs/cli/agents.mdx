@@ -1,0 +1,249 @@
+---
+title: "Agents"
+description: "Vega's six specialized AI agents and how automatic routing works."
+---
+
+# Agents
+
+Vega uses a **multi-agent architecture** — instead of one general-purpose AI doing everything, Vega routes your prompt to a specialized agent optimized for that type of task. This means better code quality, fewer hallucinations, and more relevant output.
+
+---
+
+## What is an Agent?
+
+An agent in Vega is a specialized configuration of an AI model that includes:
+
+- A **system prompt** tuned for a specific domain (web development, scripting, data analysis, etc.)
+- A **trigger classifier** that decides when to activate
+- **Output handling rules** (file naming, directory structure, language-specific formatting)
+- A **preferred model** (though you can override this)
+
+Agents don't replace the underlying model — they shape how it responds.
+
+---
+
+## All 6 Agents
+
+| Icon | Agent | Best For | Default Model | Trigger Keywords |
+|------|-------|----------|---------------|------------------|
+| 🌐 | **WebAgent** | HTML/CSS/JS websites, landing pages, portfolios | `gemini-2.5-pro` | "website", "landing page", "portfolio", "webpage", "HTML", "CSS" |
+| 📱 | **AppAgent** | React apps, Vue apps, mobile-style UIs, dashboards | `gpt-4o` | "React", "Vue", "app", "dashboard", "component", "UI" |
+| 🐍 | **CodeAgent** | Python scripts, algorithms, CLI tools, automation | `gemini-2.5-pro` | "script", "Python", "function", "algorithm", "automate" |
+| ⚙️ | **BackendAgent** | REST APIs, Node.js servers, Flask apps, databases | `claude-3-5-sonnet` | "API", "backend", "server", "REST", "Flask", "Node", "database" |
+| 📊 | **DataAgent** | Data analysis, CSV processing, charts, Pandas | `gemini-2.5-pro` | "data", "CSV", "chart", "analyze", "Pandas", "plot", "DataFrame" |
+| 🤖 | **GeneralAgent** | General questions, writing, planning, explanations | `gemini-2.0-flash` | Anything that doesn't match above |
+
+---
+
+## How Auto-Routing Works
+
+When you type a prompt, Vega runs a lightweight classifier before sending it to an agent:
+
+```
+Your prompt
+     │
+     ▼
+┌─────────────────────┐
+│   Intent Classifier  │  ← fast, lightweight model pass
+└─────────────────────┘
+     │
+     ├── "build a website" ──────────► 🌐 WebAgent
+     ├── "create a React dashboard" ─► 📱 AppAgent
+     ├── "write a Python script" ────► 🐍 CodeAgent
+     ├── "build a REST API" ─────────► ⚙️ BackendAgent
+     ├── "analyze this CSV" ─────────► 📊 DataAgent
+     └── anything else ──────────────► 🤖 GeneralAgent
+```
+
+The classifier looks at your prompt's **keywords, structure, and intent** — not just individual words. It can correctly route:
+
+- "Make a dark-mode portfolio with a hero section" → **WebAgent** (understands "portfolio" = website)
+- "Set up an Express server with JWT auth" → **BackendAgent** (understands "Express" = Node.js backend)
+- "Help me understand how quicksort works" → **GeneralAgent** (it's a question, not a build request)
+
+---
+
+## WebAgent 🌐
+
+**Best for:** Static websites, landing pages, portfolio sites, marketing pages, simple web UIs
+
+The WebAgent generates self-contained HTML/CSS/JavaScript files optimized to open directly in a browser. It understands modern CSS (Grid, Flexbox, custom properties), responsive design, and accessibility basics.
+
+### Example Prompts
+
+```
+Build a landing page for a SaaS product called "Notify" — a push notification service.
+Include navbar, hero with CTA, 3 feature cards, pricing table, and footer.
+```
+
+```
+Create a portfolio website for a photographer. Dark background, full-bleed images,
+minimal typography. Include gallery, about, and contact sections.
+```
+
+```
+Make a countdown timer web app with a custom event name input and a share button.
+```
+
+### Output
+
+```
+./notify-landing/
+├── index.html     ← complete HTML structure
+├── style.css      ← all styles (mobile responsive)
+└── script.js      ← interactive elements
+```
+
+---
+
+## AppAgent 📱
+
+**Best for:** React apps, Vue applications, component-heavy UIs, dashboards, interactive tools
+
+The AppAgent generates modern JavaScript framework code with proper component structure, state management, and build tooling. It understands React hooks, component composition, and modern frontend patterns.
+
+### Example Prompts
+
+```
+Build a React todo app with drag-and-drop reordering, priority tags, 
+and local storage persistence.
+```
+
+```
+Create a Vue 3 dashboard with a sidebar nav, stats cards at the top,
+and a data table with search and pagination.
+```
+
+```
+Build a React weather app that uses the OpenWeather API. Show current weather
+and a 5-day forecast.
+```
+
+### Output
+
+```
+./todo-app/
+├── src/
+│   ├── App.jsx
+│   ├── components/
+│   │   ├── TodoList.jsx
+│   │   ├── TodoItem.jsx
+│   │   └── AddTodo.jsx
+│   └── index.css
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+---
+
+## CodeAgent 🐍
+
+**Best for:** Python scripts, utility functions, automation, algorithms, CLI tools
+
+The CodeAgent writes clean, documented Python code. It follows PEP 8, includes docstrings, handles edge cases, and adds example usage blocks.
+
+### Example Prompts
+
+```
+Write a Python script that watches a folder for new PDF files and automatically 
+renames them based on their creation date and first page text.
+```
+
+```
+Create a command-line tool that takes a CSV file path as input, runs basic 
+statistical analysis, and outputs a summary report.
+```
+
+```
+Write a web scraper that extracts product names and prices from an e-commerce 
+site and saves them to a JSON file.
+```
+
+---
+
+## BackendAgent ⚙️
+
+**Best for:** REST APIs, Express/Node.js servers, Flask/FastAPI, database schemas, auth systems
+
+The BackendAgent creates production-ready backend code with proper error handling, input validation, and security best practices.
+
+### Example Prompts
+
+```
+Build a REST API with Flask for a blog — endpoints for creating, reading, 
+updating, and deleting posts. Use SQLite and include basic auth.
+```
+
+```
+Create a Node.js Express server with JWT authentication, rate limiting, 
+and a /users CRUD API.
+```
+
+```
+Build a FastAPI app with a PostgreSQL database for a task management system.
+Include user registration and login with hashed passwords.
+```
+
+---
+
+## DataAgent 📊
+
+**Best for:** Data analysis, Pandas operations, chart generation, CSV processing, ML preprocessing
+
+The DataAgent writes Python code using Pandas, Matplotlib, Seaborn, and other data science libraries.
+
+### Example Prompts
+
+```
+Analyze a CSV of sales data. Show monthly revenue trends, top 5 products,
+and customer retention rate. Generate charts for each.
+```
+
+```
+Write a Pandas script that cleans a messy dataset: handle missing values,
+standardize column names, remove duplicates, and export cleaned CSV.
+```
+
+---
+
+## GeneralAgent 🤖
+
+**Best for:** Questions, explanations, writing tasks, planning, anything that isn't code generation
+
+The GeneralAgent uses a faster, conversational model and handles everything that doesn't fit the other agents.
+
+### Example Prompts
+
+```
+Explain the difference between REST and GraphQL APIs.
+```
+
+```
+Write a README for my Python web scraper project.
+```
+
+```
+Help me plan the architecture for a multi-tenant SaaS application.
+```
+
+---
+
+## Overriding Auto-Routing
+
+If auto-routing picks the wrong agent, override it manually:
+
+```
+You: /agent backend
+
+✓ Agent locked to: BackendAgent ⚙️
+
+You: Now build a REST API for managing inventory...
+```
+
+To return to auto-routing:
+
+```
+You: /agent auto
+✓ Agent set to: auto-routing
+```

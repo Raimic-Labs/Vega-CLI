@@ -1,0 +1,245 @@
+---
+title: "Building APIs"
+description: "Examples for generating REST APIs, Flask backends, FastAPI services, and more with Vega."
+---
+
+# Building APIs with Vega
+
+Vega's **BackendAgent** specializes in generating server-side code — REST APIs, authentication systems, database schemas, and microservices. It produces clean, maintainable code with proper error handling, input validation, and documented endpoints.
+
+---
+
+## Example 1 — Flask REST API with Auth
+
+**Prompt:**
+```
+Build a Flask REST API for a task management app. Include user registration and login 
+with JWT tokens, and CRUD endpoints for tasks (each task has title, description, status, 
+due_date, priority). Use SQLite with SQLAlchemy. Protect task endpoints with JWT auth. 
+Include proper error handling and HTTP status codes.
+```
+
+**Agent:** ⚙️ BackendAgent  
+**Stack:** Python + Flask + SQLAlchemy + SQLite
+
+**What gets created:**
+```
+./task-api-flask/
+├── app.py
+├── models/
+│   ├── user.py
+│   └── task.py
+├── routes/
+│   ├── auth.py
+│   └── tasks.py
+├── middleware/
+│   └── auth.py
+├── requirements.txt
+└── README.md
+```
+
+**Generated endpoints:**
+```
+POST   /auth/register     — Register a new user
+POST   /auth/login        — Login and receive JWT token
+GET    /tasks             — List all user's tasks
+POST   /tasks             — Create a new task
+GET    /tasks/:id         — Get a specific task
+PUT    /tasks/:id         — Update a task
+DELETE /tasks/:id         — Delete a task
+```
+
+**Usage:**
+```bash
+pip install -r requirements.txt
+python app.py
+
+# Register
+curl -X POST http://localhost:5000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "secret123"}'
+
+# Login
+curl -X POST http://localhost:5000/auth/login \
+  -d '{"email": "user@example.com", "password": "secret123"}'
+
+# Returns: {"token": "eyJhbGciOiJIUzI1..."}
+
+# Create task (with token)
+curl -X POST http://localhost:5000/tasks \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1..." \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Launch MVP", "priority": "high", "due_date": "2025-03-01"}'
+```
+
+---
+
+## Example 2 — FastAPI with PostgreSQL
+
+**Prompt:**
+```
+Create a FastAPI app for an inventory management system. Products have: name, SKU, 
+description, price, stock_quantity, category. Include endpoints to list products 
+with filtering by category and pagination, get single product, create, update, 
+and delete. Use PostgreSQL with SQLAlchemy async. Generate auto-docs via FastAPI.
+```
+
+**Agent:** ⚙️ BackendAgent  
+**Stack:** Python + FastAPI + SQLAlchemy (async) + PostgreSQL
+
+**What gets created:**
+```
+./inventory-api/
+├── main.py
+├── database.py
+├── models/
+│   └── product.py
+├── schemas/
+│   └── product.py
+├── routers/
+│   └── products.py
+├── .env.example
+├── requirements.txt
+└── README.md
+```
+
+**Auto-generated API docs** available at `http://localhost:8000/docs` (Swagger UI) and `http://localhost:8000/redoc`.
+
+---
+
+## Example 3 — Express.js API with MongoDB
+
+**Prompt:**
+```
+Build a Node.js Express API for a blog platform. Collections: users, posts, comments. 
+Posts have: title, content, author, tags, published_at, status (draft/published). 
+Include: auth with JWT, post CRUD, comment CRUD, search by tag, and a public 
+endpoint to list published posts. Use Mongoose for MongoDB.
+```
+
+**Agent:** ⚙️ BackendAgent  
+**Stack:** Node.js + Express + MongoDB + Mongoose
+
+**What gets created:**
+```
+./blog-api-express/
+├── server.js
+├── config/
+│   └── database.js
+├── models/
+│   ├── User.js
+│   ├── Post.js
+│   └── Comment.js
+├── routes/
+│   ├── auth.js
+│   ├── posts.js
+│   └── comments.js
+├── middleware/
+│   ├── auth.js
+│   └── errorHandler.js
+├── .env.example
+├── package.json
+└── README.md
+```
+
+---
+
+## Example 4 — Python Webhook Handler
+
+**Prompt:**
+```
+Write a Flask webhook handler for Stripe payment events. Handle: 
+payment_intent.succeeded, payment_intent.payment_failed, customer.subscription.created, 
+customer.subscription.deleted. Verify Stripe webhook signatures. Log all events 
+to a SQLite database. Send email notifications on failed payments using smtplib.
+```
+
+**Agent:** ⚙️ BackendAgent  
+**Stack:** Python + Flask + Stripe SDK
+
+**What gets created:**
+```
+./stripe-webhook-handler/
+├── app.py
+├── handlers/
+│   ├── payments.py
+│   └── subscriptions.py
+├── database.py
+├── notifications.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Example 5 — GraphQL API with Apollo Server
+
+**Prompt:**
+```
+Build a GraphQL API with Apollo Server for a recipe management app. Types: Recipe, 
+Ingredient, Category. Queries: recipes (with filter by category), recipe(id), 
+searchRecipes(query). Mutations: createRecipe, updateRecipe, deleteRecipe, 
+addIngredient. Use in-memory data store for simplicity.
+```
+
+**Agent:** ⚙️ BackendAgent  
+**Stack:** Node.js + Apollo Server + GraphQL
+
+**What gets created:**
+```
+./recipe-graphql/
+├── server.js
+├── schema/
+│   └── typeDefs.js
+├── resolvers/
+│   ├── queries.js
+│   └── mutations.js
+├── data/
+│   └── store.js
+├── package.json
+└── README.md
+```
+
+**Sample GraphQL query:**
+```graphql
+query {
+  recipes(category: "Italian") {
+    id
+    title
+    prepTime
+    ingredients {
+      name
+      quantity
+      unit
+    }
+  }
+}
+```
+
+---
+
+## Testing Your Generated APIs
+
+Vega often suggests testing commands in the README. You can also ask for tests:
+
+```
+You: Add pytest tests for all the auth endpoints in the Flask API
+```
+
+```
+You: Generate a Postman collection JSON file for all the endpoints
+```
+
+```
+You: Write integration tests for the Express API using Jest and Supertest
+```
+
+---
+
+<Tip>
+  **Mention security requirements.** If you need rate limiting, CORS configuration, SQL injection prevention, or request validation, say so explicitly. The BackendAgent will include these if asked.
+</Tip>
+
+<Tip>
+  **Ask for `.env.example`.** Always ask Vega to generate a `.env.example` file so you know exactly which environment variables to configure.
+</Tip>

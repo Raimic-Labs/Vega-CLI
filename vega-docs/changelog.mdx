@@ -1,0 +1,120 @@
+---
+title: "Changelog"
+description: "Release notes and version history for Vega CLI."
+---
+
+# Changelog
+
+All notable changes to Vega CLI are documented here.
+
+---
+
+## v0.1.0 — Initial Release
+
+**Released:** January 2025  
+**Status:** Stable
+
+This is the first public release of Vega CLI by Raimic Labs. 🎉
+
+---
+
+### ✨ New Features
+
+#### Multi-Agent Architecture
+Vega launches with 6 specialized AI agents, each tuned for a different development domain:
+
+- 🌐 **WebAgent** — HTML/CSS/JS websites and landing pages
+- 📱 **AppAgent** — React and Vue frontend applications
+- 🐍 **CodeAgent** — Python scripts, algorithms, and CLI tools
+- ⚙️ **BackendAgent** — REST APIs, servers, and database integrations
+- 📊 **DataAgent** — Data analysis, Pandas, and chart generation
+- 🤖 **GeneralAgent** — General questions, writing, and planning
+
+#### Automatic Intent Routing
+Vega analyzes your prompt and automatically selects the most appropriate agent. No manual configuration needed — just describe what you want.
+
+#### Multi-Model Support
+Connect API keys from 7 different providers and switch between 14+ models:
+
+| Provider | Models |
+|----------|--------|
+| Google | `gemini-2.5-pro`, `gemini-2.0-flash`, `gemini-1.5-pro` |
+| OpenAI | `gpt-4o`, `gpt-4o-mini` |
+| Anthropic | `claude-3-5-sonnet`, `claude-3-haiku` |
+| Groq | `llama-3.3-70b-versatile`, `llama-3.1-8b-instant`, `mixtral-8x7b` |
+| DeepSeek | `deepseek-chat`, `deepseek-coder` |
+| Mistral | `mistral-large-latest` |
+| NVIDIA NIM | `nvidia/llama-3.1-nemotron-70b` |
+
+#### Interactive Slash Commands
+The following slash commands are available inside the Vega session:
+
+- `/connect` — Add or update API keys
+- `/model` — Switch AI model mid-session
+- `/agent` — Manually override agent routing
+- `/agents` — List all available agents
+- `/clear` — Clear screen and reset conversation history
+- `/save` — Save session to a file
+- `/history` — Show message history
+- `/status` — Display current model, agent, and key status
+- `/help` — Show all available commands
+
+#### Direct File Output
+All generated code is written directly to the current working directory. No clipboard required — just describe what you want and the files appear in your project folder.
+
+#### Persistent API Key Storage
+API keys are saved locally to `~/.vega/config.json` and persist across sessions. Add once, use forever.
+
+#### Session Context
+Vega maintains conversation context throughout a session, allowing you to refine, iterate, and build incrementally.
+
+---
+
+### 🔧 Technical Details
+
+- **Minimum Python version:** 3.9
+- **Supported platforms:** macOS, Linux, Windows (PowerShell / Windows Terminal)
+- **Config location:** `~/.vega/config.json`
+- **Default model:** `gemini-2.5-pro`
+
+---
+
+### 📦 Dependencies
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `rich` | ≥13.0 | Terminal rendering and colors |
+| `httpx` | ≥0.27 | Async HTTP requests |
+| `prompt_toolkit` | ≥3.0 | Interactive shell |
+| `google-generativeai` | ≥0.8 | Gemini models |
+| `openai` | ≥1.0 | GPT-4o models |
+| `anthropic` | ≥0.34 | Claude models |
+| `groq` | ≥0.11 | Groq/LLaMA models |
+
+---
+
+### 🐛 Known Issues
+
+- **Long responses may truncate** on models with strict output limits. Workaround: ask Vega to "continue" or break into smaller requests.
+- **Existing file editing** is not yet supported — Vega generates new files only. Paste existing code into the prompt for context.
+- **Windows Command Prompt** has limited Unicode rendering. Use Windows Terminal for the best experience.
+- **Ollama/local model support** is not yet available. Planned for v0.2.0.
+
+---
+
+### 🗺️ What's Coming Next (v0.2.0)
+
+We're actively working on the next release, which will include:
+
+- **File reading support** — Point Vega at existing files with `@filename.py` syntax
+- **Ollama integration** — Run Vega with local models, fully offline
+- **Project mode** — Give Vega a full project context with `/project` command
+- **Shell command execution** — Let Vega run `npm install`, `pip install`, etc. automatically after generating code
+- **Better error recovery** — Automatic retry with modified prompts on generation failure
+- **VS Code extension** — Vega inside your editor (early preview)
+
+---
+
+<Note>
+  To stay updated on new releases, watch the [GitHub repository](https://github.com/Raimic-Labs/Vega-CLI) or check back on this page. You can always upgrade with `pip install --upgrade vega-raimic`.
+</Note>
