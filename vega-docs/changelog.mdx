@@ -11,7 +11,7 @@ All notable changes to Vega CLI are documented here.
 
 ## v0.1.0 — Initial Release
 
-**Released:** January 2025  
+**Released:** June 2026
 **Status:** Stable
 
 This is the first public release of Vega CLI by Raimic Labs. 🎉
@@ -23,73 +23,102 @@ This is the first public release of Vega CLI by Raimic Labs. 🎉
 #### Multi-Agent Architecture
 Vega launches with 6 specialized AI agents, each tuned for a different development domain:
 
-- 🌐 **WebAgent** — HTML/CSS/JS websites and landing pages
-- 📱 **AppAgent** — React and Vue frontend applications
-- 🐍 **CodeAgent** — Python scripts, algorithms, and CLI tools
-- ⚙️ **BackendAgent** — REST APIs, servers, and database integrations
-- 📊 **DataAgent** — Data analysis, Pandas, and chart generation
-- 🤖 **GeneralAgent** — General questions, writing, and planning
+| Icon | Agent        | Provider            | Triggers                                  |
+|------|--------------|---------------------|-------------------------------------------|
+| ⟡   | CodeAgent    | NVIDIA / Kimi K2    | build, create, make, scaffold, init       |
+| 🎨   | ImageAgent   | Google Gemini Flash  | image, draw, picture                      |
+| ⚡   | FastAgent    | Groq / Llama 4 Scout | what, explain, quick, summarize, list     |
+| 🗺   | PlannerAgent | DeepSeek-V3         | plan, architect, design                   |
+| 🔧   | DebugAgent   | NVIDIA / Kimi K2    | fix, bug, error, debug, traceback         |
+| 👁   | ReviewAgent  | DeepSeek-V3         | review, refactor, improve, audit          |
 
 #### Automatic Intent Routing
-Vega analyzes your prompt and automatically selects the most appropriate agent. No manual configuration needed — just describe what you want.
+Vega analyzes your prompt and automatically selects the most appropriate agent. No manual configuration needed — just describe what you want. If the targeted agent's provider has no API key configured, it gracefully falls back to your active provider.
 
 #### Multi-Model Support
-Connect API keys from 7 different providers and switch between 14+ models:
+Connect API keys from 4 providers and switch between 15+ models:
 
-| Provider | Models |
-|----------|--------|
-| Google | `gemini-2.5-pro`, `gemini-2.0-flash`, `gemini-1.5-pro` |
-| OpenAI | `gpt-4o`, `gpt-4o-mini` |
-| Anthropic | `claude-3-5-sonnet`, `claude-3-haiku` |
-| Groq | `llama-3.3-70b-versatile`, `llama-3.1-8b-instant`, `mixtral-8x7b` |
-| DeepSeek | `deepseek-chat`, `deepseek-coder` |
-| Mistral | `mistral-large-latest` |
-| NVIDIA NIM | `nvidia/llama-3.1-nemotron-70b` |
+| Provider     | Key Models                                                    |
+|--------------|---------------------------------------------------------------|
+| NVIDIA NIM   | `moonshotai/kimi-k2-instruct`, `meta/llama-3.1-405b-instruct`, `meta/llama-3.1-70b-instruct` |
+| Google       | `gemini-2.0-flash`, `gemini-1.5-pro`, `gemma-2-27b-it`      |
+| Groq         | `llama-3.3-70b-versatile`, `meta-llama/llama-4-scout-17b-16e-instruct`, `mixtral-8x7b-32768` |
+| DeepSeek     | `deepseek-chat` (DeepSeek-V3), `deepseek-reasoner` (DeepSeek-R1) |
 
 #### Interactive Slash Commands
 The following slash commands are available inside the Vega session:
 
-- `/connect` — Add or update API keys
-- `/model` — Switch AI model mid-session
-- `/agent` — Manually override agent routing
-- `/agents` — List all available agents
+- `/connect` — First-run wizard to add or update API keys
+- `/switch` — Interactively pick from 5 primary models
+- `/model [id]` — Set model by exact ID
+- `/provider [name]` — Switch active provider
+- `/models` — List all models in the registry
+- `/agents` — Show the specialized agent roster
+- `/build <goal>` — Launch project builder mode
+- `/agent <goal>` — Run autonomous ReAct agent with tools
 - `/clear` — Clear screen and reset conversation history
-- `/save` — Save session to a file
-- `/history` — Show message history
-- `/status` — Display current model, agent, and key status
+- `/history` — Show saved sessions
+- `/export [path]` — Export session to Markdown
+- `/settings` / `/config [k] [v]` — View or set config values
+- `/system [prompt]` — View or override the system prompt
+- `/tokens` — Show turn count and token usage
+- `/reset` — Reset config to defaults
+- `/version` — Print Vega version
 - `/help` — Show all available commands
+
+#### Project Builder
+A full project generation pipeline powered by LLMs:
+
+1. **Plan** — ask the LLM to produce a structured JSON build plan (description, stack, file list)
+2. **Generate** — generate each file's content with a per-file prompt
+3. **Write** — write all files to the output directory
+4. **Post-build** — optionally export as a ZIP archive or open `index.html` in the browser
+
+Also available as a CLI sub-command:
+
+```bash
+vega build "FastAPI todo app with SQLite" --out ./my-api
+```
+
+#### Autonomous ReAct Agent
+`/agent <goal>` runs a multi-step Reason + Act loop that can:
+- Plan multi-step approaches
+- Call built-in tools (`write_file`, `read_file`, `list_files`, `run_shell`)
+- Observe results and re-plan
+- Return a final answer when the goal is complete
+
+#### Session Persistence
+Every conversation turn is auto-saved to `~/.vega/sessions/<uuid>.jsonl`. Use `/export` to produce a Markdown transcript.
 
 #### Direct File Output
 All generated code is written directly to the current working directory. No clipboard required — just describe what you want and the files appear in your project folder.
 
 #### Persistent API Key Storage
-API keys are saved locally to `~/.vega/config.json` and persist across sessions. Add once, use forever.
-
-#### Session Context
-Vega maintains conversation context throughout a session, allowing you to refine, iterate, and build incrementally.
+API keys are saved locally to `~/.vega/config.json` and persist across sessions. Keys can also be set via environment variables (`VEGA_NVIDIA_API_KEY`, etc.).
 
 ---
 
 ### 🔧 Technical Details
 
-- **Minimum Python version:** 3.9
+- **Minimum Python version:** 3.10
 - **Supported platforms:** macOS, Linux, Windows (PowerShell / Windows Terminal)
 - **Config location:** `~/.vega/config.json`
-- **Default model:** `gemini-2.5-pro`
+- **Sessions location:** `~/.vega/sessions/`
+- **Default model:** `meta/llama-3.1-405b-instruct` (NVIDIA NIM)
+- **Architecture:** Typer CLI + Rich terminal UI + Modular provider system
 
 ---
 
 ### 📦 Dependencies
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `rich` | ≥13.0 | Terminal rendering and colors |
-| `httpx` | ≥0.27 | Async HTTP requests |
-| `prompt_toolkit` | ≥3.0 | Interactive shell |
-| `google-generativeai` | ≥0.8 | Gemini models |
-| `openai` | ≥1.0 | GPT-4o models |
-| `anthropic` | ≥0.34 | Claude models |
-| `groq` | ≥0.11 | Groq/LLaMA models |
+| Package          | Version   | Purpose                          |
+|------------------|-----------|----------------------------------|
+| `rich`           | ≥13.7     | Terminal rendering and colors    |
+| `typer[all]`     | ≥0.12     | CLI framework                    |
+| `httpx`          | ≥0.27     | HTTP requests                    |
+| `openai`         | ≥1.30     | NVIDIA NIM + OpenAI-compatible APIs |
+| `google-genai`   | ≥1.0      | Google Gemini models             |
+| `groq`           | ≥0.9      | Groq/LLaMA models                |
 
 ---
 

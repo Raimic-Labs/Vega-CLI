@@ -13,237 +13,149 @@ Vega uses a **multi-agent architecture** — instead of one general-purpose AI d
 
 An agent in Vega is a specialized configuration of an AI model that includes:
 
-- A **system prompt** tuned for a specific domain (web development, scripting, data analysis, etc.)
-- A **trigger classifier** that decides when to activate
-- **Output handling rules** (file naming, directory structure, language-specific formatting)
-- A **preferred model** (though you can override this)
+- A **preferred model** tuned for a specific task (code generation, planning, debugging, etc.)
+- A **trigger classifier** that decides when to activate based on keywords in your prompt
+- **Graceful fallback** — if the agent's provider isn't configured, Vega uses your active provider seamlessly
 
-Agents don't replace the underlying model — they shape how it responds.
+Agents don't change the conversation — they silently route to a better model for the task at hand.
 
 ---
 
 ## All 6 Agents
 
-| Icon | Agent | Best For | Default Model | Trigger Keywords |
+| Icon | Agent | Provider | Default Model | Trigger Keywords |
 |------|-------|----------|---------------|------------------|
-| 🌐 | **WebAgent** | HTML/CSS/JS websites, landing pages, portfolios | `gemini-2.5-pro` | "website", "landing page", "portfolio", "webpage", "HTML", "CSS" |
-| 📱 | **AppAgent** | React apps, Vue apps, mobile-style UIs, dashboards | `gpt-4o` | "React", "Vue", "app", "dashboard", "component", "UI" |
-| 🐍 | **CodeAgent** | Python scripts, algorithms, CLI tools, automation | `gemini-2.5-pro` | "script", "Python", "function", "algorithm", "automate" |
-| ⚙️ | **BackendAgent** | REST APIs, Node.js servers, Flask apps, databases | `claude-3-5-sonnet` | "API", "backend", "server", "REST", "Flask", "Node", "database" |
-| 📊 | **DataAgent** | Data analysis, CSV processing, charts, Pandas | `gemini-2.5-pro` | "data", "CSV", "chart", "analyze", "Pandas", "plot", "DataFrame" |
-| 🤖 | **GeneralAgent** | General questions, writing, planning, explanations | `gemini-2.0-flash` | Anything that doesn't match above |
+| ⟡  | **CodeAgent** | NVIDIA NIM | `moonshotai/kimi-k2-instruct` | build, create, make, clone, duplicate, port, rewrite, scaffold, boilerplate, template, starter, init |
+| 🎨 | **ImageAgent** | Google | `gemini-2.0-flash` | image, draw, picture |
+| ⚡ | **FastAgent** | Groq | `meta-llama/llama-4-scout-17b-16e-instruct` | what, explain, quick, what's, who is, how many, when was, list, show me, give me, summarize |
+| 🗺 | **PlannerAgent** | DeepSeek | `deepseek-chat` | plan, architect, design |
+| 🔧 | **DebugAgent** | NVIDIA NIM | `moonshotai/kimi-k2-instruct` | fix, bug, error, debug, traceback, exception, failing, doesn't work, not running, syntax error, runtime error |
+| 👁 | **ReviewAgent** | DeepSeek | `deepseek-chat` | review, refactor, improve, audit, security, performance, lint, best practices, code quality |
 
 ---
 
 ## How Auto-Routing Works
 
-When you type a prompt, Vega runs a lightweight classifier before sending it to an agent:
+When you type a prompt, Vega runs a lightweight keyword classifier before sending it to an agent:
 
 ```
 Your prompt
      │
      ▼
 ┌─────────────────────┐
-│   Intent Classifier  │  ← fast, lightweight model pass
+│   Intent Classifier  │  ← fast keyword matching on your input
 └─────────────────────┘
      │
-     ├── "build a website" ──────────► 🌐 WebAgent
-     ├── "create a React dashboard" ─► 📱 AppAgent
-     ├── "write a Python script" ────► 🐍 CodeAgent
-     ├── "build a REST API" ─────────► ⚙️ BackendAgent
-     ├── "analyze this CSV" ─────────► 📊 DataAgent
-     └── anything else ──────────────► 🤖 GeneralAgent
+     ├── "build a website" ────────────► ⟡  CodeAgent (Kimi K2)
+     ├── "explain what a REST API is" ─► ⚡ FastAgent (Llama 4 Scout)
+     ├── "plan the architecture" ──────► 🗺 PlannerAgent (DeepSeek-V3)
+     ├── "fix this bug in my code" ────► 🔧 DebugAgent (Kimi K2)
+     ├── "review my code for issues" ──► 👁 ReviewAgent (DeepSeek-V3)
+     └── anything else ──────────────► Active provider (no agent)
 ```
 
-The classifier looks at your prompt's **keywords, structure, and intent** — not just individual words. It can correctly route:
+The classifier looks at your prompt's **keywords and structure** — not just individual words. It can correctly route:
 
-- "Make a dark-mode portfolio with a hero section" → **WebAgent** (understands "portfolio" = website)
-- "Set up an Express server with JWT auth" → **BackendAgent** (understands "Express" = Node.js backend)
-- "Help me understand how quicksort works" → **GeneralAgent** (it's a question, not a build request)
+- "Make me a todo app with React" → **CodeAgent** (understands "make" + "app" = build intent)
+- "What's the difference between REST and GraphQL?" → **FastAgent** (understands "what's" = quick Q&A)
+- "Design a microservices system for an e-commerce platform" → **PlannerAgent** (understands "design" = architecture)
+- "My Python script keeps throwing AttributeError" → **DebugAgent** (understands "error" = debug)
 
 ---
 
-## WebAgent 🌐
+## Viewing Agents in Vega
 
-**Best for:** Static websites, landing pages, portfolio sites, marketing pages, simple web UIs
-
-The WebAgent generates self-contained HTML/CSS/JavaScript files optimized to open directly in a browser. It understands modern CSS (Grid, Flexbox, custom properties), responsive design, and accessibility basics.
-
-### Example Prompts
-
-```
-Build a landing page for a SaaS product called "Notify" — a push notification service.
-Include navbar, hero with CTA, 3 feature cards, pricing table, and footer.
+```bash
+/agents
 ```
 
-```
-Create a portfolio website for a photographer. Dark background, full-bleed images,
-minimal typography. Include gallery, about, and contact sections.
-```
-
-```
-Make a countdown timer web app with a custom event name input and a share button.
-```
-
-### Output
-
-```
-./notify-landing/
-├── index.html     ← complete HTML structure
-├── style.css      ← all styles (mobile responsive)
-└── script.js      ← interactive elements
-```
+This displays the full agent roster in a formatted table showing each agent's icon, triggers, and description.
 
 ---
 
-## AppAgent 📱
+## Agent Fallback Behavior
 
-**Best for:** React apps, Vue applications, component-heavy UIs, dashboards, interactive tools
-
-The AppAgent generates modern JavaScript framework code with proper component structure, state management, and build tooling. It understands React hooks, component composition, and modern frontend patterns.
-
-### Example Prompts
+If the agent's preferred provider **doesn't have an API key configured**, Vega automatically falls back to your active provider:
 
 ```
-Build a React todo app with drag-and-drop reordering, priority tags, 
-and local storage persistence.
+  Routed to CodeAgent (moonshotai/kimi-k2-instruct)
 ```
+→ if NVIDIA key exists, uses Kimi K2 (ideal)
 
 ```
-Create a Vue 3 dashboard with a sidebar nav, stats cards at the top,
-and a data table with search and pagination.
+  # No NVIDIA key → falls back silently to active provider
 ```
+→ if no NVIDIA key, uses your current model (still works, just not the specialized model)
 
-```
-Build a React weather app that uses the OpenWeather API. Show current weather
-and a 5-day forecast.
-```
-
-### Output
-
-```
-./todo-app/
-├── src/
-│   ├── App.jsx
-│   ├── components/
-│   │   ├── TodoList.jsx
-│   │   ├── TodoItem.jsx
-│   │   └── AddTodo.jsx
-│   └── index.css
-├── index.html
-├── package.json
-└── vite.config.js
-```
+This means Vega always produces output, even if you've only configured one provider.
 
 ---
 
-## CodeAgent 🐍
+## Specialized Agent Prompts
 
-**Best for:** Python scripts, utility functions, automation, algorithms, CLI tools
+Each agent uses a system prompt tuned for its domain. The **CodeAgent** and **DebugAgent** both use Kimi K2 because it excels at multi-file code generation and complex debugging. The **PlannerAgent** and **ReviewAgent** use DeepSeek-V3 for its strong reasoning at low cost.
 
-The CodeAgent writes clean, documented Python code. It follows PEP 8, includes docstrings, handles edge cases, and adds example usage blocks.
+---
 
-### Example Prompts
+## The Autonomous Agent (`/agent`)
 
-```
-Write a Python script that watches a folder for new PDF files and automatically 
-renames them based on their creation date and first page text.
-```
+Beyond the routing agents above, Vega includes a full **autonomous ReAct agent** you can invoke directly:
 
-```
-Create a command-line tool that takes a CSV file path as input, runs basic 
-statistical analysis, and outputs a summary report.
+```bash
+/agent Build a Python web scraper that collects headlines from HackerNews
 ```
 
+The ReAct agent runs a **multi-step Reason + Act loop**:
+
+1. **Thought** — reasons about what to do next
+2. **Action** — calls a tool (write file, read file, list files, run shell command)
+3. **Observation** — sees the result
+4. **Repeat** — until the goal is complete or max iterations reached
+
+### Available Tools
+
+| Tool         | Description                                           |
+|--------------|-------------------------------------------------------|
+| `write_file` | Write content to a file path                          |
+| `read_file`  | Read the contents of a file                           |
+| `list_files` | List files in a directory                             |
+| `run_shell`  | Execute a shell command (warns before running)        |
+
+### Example Session
+
 ```
-Write a web scraper that extracts product names and prices from an e-commerce 
-site and saves them to a JSON file.
+  ✦ › /agent Build a FastAPI hello-world app
+
+  ──────────── Vega Agent — Build a FastAPI hello-world app ────────────
+  Iteration 1/10
+  Thought: I need to create a FastAPI app with a hello world endpoint.
+  Action: write_file
+  Args: {"path": "main.py", "content": "from fastapi import FastAPI\n..."}
+  Tool [write_file] → Written: ./main.py
+
+  Iteration 2/10
+  Thought: I should also create requirements.txt.
+  Action: write_file
+  Args: {"path": "requirements.txt", "content": "fastapi\nuvicorn\n"}
+  Tool [write_file] → Written: ./requirements.txt
+
+  Action: FINISH
+  Answer: Created main.py and requirements.txt. Run with: uvicorn main:app --reload
+  ✔  Agent finished.
 ```
 
 ---
 
-## BackendAgent ⚙️
+## Manually Overriding the Agent
 
-**Best for:** REST APIs, Express/Node.js servers, Flask/FastAPI, database schemas, auth systems
+You can force a specific model for any conversation using `/switch` or `/model`:
 
-The BackendAgent creates production-ready backend code with proper error handling, input validation, and security best practices.
+```bash
+# Interactively pick from the 5 primary models
+/switch
 
-### Example Prompts
-
-```
-Build a REST API with Flask for a blog — endpoints for creating, reading, 
-updating, and deleting posts. Use SQLite and include basic auth.
-```
-
-```
-Create a Node.js Express server with JWT authentication, rate limiting, 
-and a /users CRUD API.
+# Set a specific model by ID
+/model deepseek-chat
 ```
 
-```
-Build a FastAPI app with a PostgreSQL database for a task management system.
-Include user registration and login with hashed passwords.
-```
-
----
-
-## DataAgent 📊
-
-**Best for:** Data analysis, Pandas operations, chart generation, CSV processing, ML preprocessing
-
-The DataAgent writes Python code using Pandas, Matplotlib, Seaborn, and other data science libraries.
-
-### Example Prompts
-
-```
-Analyze a CSV of sales data. Show monthly revenue trends, top 5 products,
-and customer retention rate. Generate charts for each.
-```
-
-```
-Write a Pandas script that cleans a messy dataset: handle missing values,
-standardize column names, remove duplicates, and export cleaned CSV.
-```
-
----
-
-## GeneralAgent 🤖
-
-**Best for:** Questions, explanations, writing tasks, planning, anything that isn't code generation
-
-The GeneralAgent uses a faster, conversational model and handles everything that doesn't fit the other agents.
-
-### Example Prompts
-
-```
-Explain the difference between REST and GraphQL APIs.
-```
-
-```
-Write a README for my Python web scraper project.
-```
-
-```
-Help me plan the architecture for a multi-tenant SaaS application.
-```
-
----
-
-## Overriding Auto-Routing
-
-If auto-routing picks the wrong agent, override it manually:
-
-```
-You: /agent backend
-
-✓ Agent locked to: BackendAgent ⚙️
-
-You: Now build a REST API for managing inventory...
-```
-
-To return to auto-routing:
-
-```
-You: /agent auto
-✓ Agent set to: auto-routing
-```
+This overrides the agent routing for the rest of the session.

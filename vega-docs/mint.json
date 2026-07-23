@@ -7,26 +7,51 @@
   "favicon": "/favicon.svg",
   "colors": {
     "primary": "#00FFFF",
-    "light": "#00FFFF",
-    "dark": "#000000"
+    "light": "#67F5F5",
+    "dark": "#003F3F",
+    "anchors": {
+      "from": "#00FFFF",
+      "to": "#0055FF"
+    }
   },
   "topbarLinks": [
     {
       "name": "GitHub",
       "url": "https://github.com/Raimic-Labs/Vega-CLI"
+    },
+    {
+      "name": "PyPI",
+      "url": "https://pypi.org/project/vega-raimic/"
     }
   ],
   "topbarCtaButton": {
-    "name": "Get Started",
+    "name": "Install Vega",
     "url": "/installation"
   },
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/Raimic-Labs/Vega-CLI"
+    },
+    {
+      "name": "PyPI",
+      "icon": "python",
+      "url": "https://pypi.org/project/vega-raimic/"
+    },
+    {
+      "name": "Changelog",
+      "icon": "list",
+      "url": "/changelog"
+    }
+  ],
   "navigation": [
     {
       "group": "Getting Started",
       "pages": ["introduction", "installation", "quickstart"]
     },
     {
-      "group": "CLI",
+      "group": "CLI Reference",
       "pages": ["cli/commands", "cli/agents", "cli/models", "cli/api-keys"]
     },
     {
@@ -39,13 +64,16 @@
     }
   ],
   "footerSocials": {
-    "github": "https://github.com/Raimic-Labs"
+    "github": "https://github.com/Raimic-Labs",
+    "x": "https://twitter.com/raimiclabs"
   },
   "modeToggle": {
-    "default": "dark"
+    "default": "dark",
+    "isHidden": false
   },
   "feedback": {
     "thumbsRating": true,
-    "suggestEdit": true
+    "suggestEdit": true,
+    "raiseIssue": true
   }
 }

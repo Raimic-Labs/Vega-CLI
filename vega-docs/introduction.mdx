@@ -1,6 +1,6 @@
 ---
 title: "Introduction"
-description: "Meet Vega — an AI-powered CLI that lets you build full-stack projects, scripts, and APIs by just describing what you want."
+description: "Meet Vega — an AI-powered CLI that builds full-stack projects, scripts, and APIs right in your terminal."
 ---
 
 # What is Vega?
@@ -9,7 +9,7 @@ description: "Meet Vega — an AI-powered CLI that lets you build full-stack pro
 
 > **Code at the speed of stars.** ✦
 
-Instead of copy-pasting from ChatGPT or switching between browser tabs, you simply open your terminal, run `vega`, describe what you want to build, and watch it happen.
+Instead of copy-pasting from a browser or switching between chat tabs, you simply open your terminal, run `vega`, describe what you want to build, and watch it happen.
 
 ---
 
@@ -22,13 +22,13 @@ Most AI coding tools are IDE plugins or browser-based — they're great for auto
     Lives entirely in your shell. No browser tabs, no GUI drag-and-drop. Just type and build.
   </Card>
   <Card title="Multi-Agent Routing" icon="robot">
-    Automatically selects the best specialized AI agent for each task — code, web, API, scripts, and more.
+    Automatically selects the best specialized AI agent for each task — code, debug, plan, review, and more.
   </Card>
   <Card title="Multi-Model Support" icon="brain">
-    Works with Gemini, GPT-4o, Claude, DeepSeek, LLaMA, Mistral, and more. Bring your own keys.
+    Works with NVIDIA NIM, Google Gemini, Groq, and DeepSeek. Bring your own keys — all offer free tiers.
   </Card>
   <Card title="Zero Config to Start" icon="bolt">
-    Install, run `vega`, and you're coding. No project scaffolding or boilerplate required.
+    Install, run `vega`, and you're coding. The first-run wizard guides you through connecting a provider in seconds.
   </Card>
 </CardGroup>
 
@@ -36,14 +36,15 @@ Most AI coding tools are IDE plugins or browser-based — they're great for auto
 
 ## Key Features
 
-- 🤖 **6 Specialized AI Agents** — each optimized for a different domain (web, app, backend, script, data, general)
-- 🌐 **Multi-model Support** — Gemini 2.5 Pro, GPT-4o, Claude 3.5, DeepSeek, Groq LLaMA, Mistral and more
+- 🤖 **6 Specialized AI Agents** — each optimized for a different domain (code, image, fast Q&A, planning, debugging, review)
+- 🌐 **Multi-Model Support** — NVIDIA Kimi K2, Llama 3.1 405B, Gemini 2.0 Flash, Groq Llama 4, DeepSeek-V3, and more
 - ⚡ **Instant Project Generation** — full websites, REST APIs, React apps, Python scripts from one prompt
 - 🔑 **Flexible API Keys** — use free-tier keys from NVIDIA, Gemini, Groq, DeepSeek — no paid subscription required
 - 💬 **Conversational Context** — Vega remembers your session so you can refine and iterate naturally
-- 🛠️ **Slash Commands** — built-in shortcuts like `/connect`, `/model`, `/clear`, `/save` for power users
+- 🛠️ **Slash Commands** — built-in shortcuts like `/connect`, `/switch`, `/build`, `/agents` for power users
 - 📁 **Direct File Output** — generated code is written to your working directory, ready to run
-- 🔄 **Live Model Switching** — swap models mid-conversation with `/model`
+- 🔄 **Live Model Switching** — swap models or providers mid-conversation with `/switch`
+- 🤖 **Autonomous ReAct Agent** — `/agent <goal>` runs a multi-step reasoning loop with tool use
 
 ---
 
@@ -61,19 +62,25 @@ $ vega
    ╚████╔╝ ███████╗╚██████╔╝██║  ██║
     ╚═══╝  ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
 
-  Code at the speed of stars ✦
-  Powered by Raimic Labs
+  Code at the speed of stars
+  by Raimic Labs
 
-Model: gemini-2.5-pro  Agent: auto
-──────────────────────────────────────────
-You: Build me a landing page for a SaaS product called "FlowBoard" — a project management tool. Make it modern, with a hero section, features, and pricing.
+  ✦ Vega v0.1.0 is ready. Type /help for commands.
 
-🌐 WebAgent activated
-✦ Generating landing page...
-✦ Writing index.html, style.css, script.js...
-✦ Done! Files created in ./flowboard-landing/
+  ✦ › Build me a landing page for a SaaS product called "FlowBoard"
 
-You can open index.html in your browser now.
+  ⟡ CodeAgent active
+  Routed to CodeAgent (moonshotai/kimi-k2-instruct)
+
+  ✦ Planning project structure…
+  ✦ Generating files… [████████████████████████████░░] 5/6
+  ✦ Build complete! 6 files → ./build_me_a_landing_page_for_a_saas_p/
+
+  Export ZIP? [y/N] y
+  ✔  Archive → ./build_me_a_landing_page...zip
+
+  Open index.html in browser? [y/N] y
+  ✔  Opened → /path/to/index.html
 ```
 
 ---
@@ -85,6 +92,17 @@ You can open index.html in your browser now.
 3. **The agent generates code** — using the configured AI model, it produces complete, working files
 4. **Files land in your directory** — no clipboard needed; Vega writes directly to your filesystem
 5. **Iterate naturally** — follow up, refine, ask questions — Vega keeps the context throughout
+
+---
+
+## Supported Providers
+
+| Provider     | Free Tier | Key Prefix | Notes                          |
+|--------------|-----------|------------|--------------------------------|
+| NVIDIA NIM   | ✅ Yes    | `nvapi-`   | Get key at build.nvidia.com    |
+| Google       | ✅ Yes    | `AIza`     | Get key at aistudio.google.com |
+| Groq         | ✅ Yes    | `gsk_`     | Get key at console.groq.com    |
+| DeepSeek     | ⚡ Cheap  | `sk-`      | Get key at platform.deepseek.com |
 
 ---
 

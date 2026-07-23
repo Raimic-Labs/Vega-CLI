@@ -5,163 +5,165 @@ description: "All supported AI models in Vega, how to switch between them, and w
 
 # Models
 
-Vega supports a wide range of AI models from multiple providers. You can use free-tier models to get started at no cost, or bring premium API keys for the most capable models available.
+Vega supports 15+ AI models across 4 providers. You can use free-tier models to get started at no cost, and switch between providers and models at any time.
 
 ---
 
 ## Supported Models
 
-| Model | Provider | Context | Best For | Cost |
-|-------|----------|---------|----------|------|
-| `gemini-2.5-pro` | Google | 1M tokens | Complex reasoning, long code, multi-file projects | Free tier available |
-| `gemini-2.0-flash` | Google | 1M tokens | Fast responses, general chat, quick scripts | Free tier available |
-| `gemini-1.5-pro` | Google | 2M tokens | Very long context, large codebases | Free tier available |
-| `gpt-4o` | OpenAI | 128K tokens | Excellent code quality, React, complex apps | Paid |
-| `gpt-4o-mini` | OpenAI | 128K tokens | Fast, affordable, good for simple tasks | Paid (cheap) |
-| `claude-3-5-sonnet` | Anthropic | 200K tokens | Backend, APIs, security-aware code | Paid |
-| `claude-3-haiku` | Anthropic | 200K tokens | Fast Claude responses | Paid |
-| `llama-3.3-70b-versatile` | Groq | 128K tokens | Ultra-fast inference, free | Free tier |
-| `llama-3.1-8b-instant` | Groq | 128K tokens | Instant responses, lightweight tasks | Free tier |
-| `mixtral-8x7b-32768` | Groq | 32K tokens | Balanced speed and quality | Free tier |
-| `deepseek-chat` | DeepSeek | 128K tokens | Code generation, math, reasoning | Free tier |
-| `deepseek-coder` | DeepSeek | 128K tokens | Specialized for code | Free tier |
-| `mistral-large-latest` | Mistral | 128K tokens | European privacy, multilingual | Paid |
-| `nvidia/llama-3.1-nemotron-70b` | NVIDIA NIM | 128K tokens | Advanced reasoning, free | Free tier |
+### NVIDIA NIM
+
+Access the world's best open-source models via NVIDIA's free inference platform.
+
+| Model ID | Name | Context | Best For |
+|----------|------|---------|----------|
+| `moonshotai/kimi-k2-instruct` | Kimi K2 | 32K | Code generation, multi-file projects (**default for CodeAgent & DebugAgent**) |
+| `meta/llama-3.1-405b-instruct` | Llama 3.1 405B | 128K | Complex reasoning, production code (**Vega default model**) |
+| `meta/llama-3.1-70b-instruct` | Llama 3.1 70B | 128K | Balanced quality and speed |
+| `meta/llama-3.1-8b-instruct` | Llama 3.1 8B | 128K | Lightweight, fast tasks |
+| `nvidia/llama-3.1-nemotron-70b-instruct` | Nemotron 70B | 128K | NVIDIA fine-tuned reasoning |
+
+### Google Gemini
+
+<Note>Free tier: 15 requests/min, 1M tokens/day via Google AI Studio.</Note>
+
+| Model ID | Name | Context | Best For |
+|----------|------|---------|----------|
+| `gemini-2.0-flash` | Gemini 2.0 Flash | 1M | Fast chat, creative tasks (**default for ImageAgent**) |
+| `gemini-1.5-pro` | Gemini 1.5 Pro | 2M | Long context, large codebases |
+| `gemma-2-27b-it` | Gemma 2 27B | 8K | Open-weight model, local-friendly |
+
+### Groq
+
+<Note>Free tier: 14,400 requests/day. Ultra-fast inference hardware.</Note>
+
+| Model ID | Name | Context | Best For |
+|----------|------|---------|----------|
+| `llama-3.3-70b-versatile` | Llama 3.3 70B | 128K | Fast general-purpose chat |
+| `meta-llama/llama-4-scout-17b-16e-instruct` | Llama 4 Scout | 128K | Quick Q&A (**default for FastAgent**) |
+| `mixtral-8x7b-32768` | Mixtral 8x7B | 32K | Multilingual, balanced |
+
+### DeepSeek
+
+<Note>$5 free credit on sign-up. Very cost-effective for reasoning tasks.</Note>
+
+| Model ID | Name | Context | Best For |
+|----------|------|---------|----------|
+| `deepseek-chat` | DeepSeek-V3 | 128K | Planning, review, architecture (**default for PlannerAgent & ReviewAgent**) |
+| `deepseek-reasoner` | DeepSeek-R1 | 128K | Multi-step reasoning, math, logic |
 
 ---
 
 ## Default Model
 
-Vega starts with **`gemini-2.5-pro`** as the default model. It offers the best balance of:
+Vega starts with **`meta/llama-3.1-405b-instruct`** (NVIDIA NIM) as the default model. It offers an excellent balance of:
 - Code quality and reasoning depth
-- Long context window (up to 1M tokens)
-- Free-tier availability via Google AI Studio
+- Long context window (128K tokens)
+- Free-tier availability via NVIDIA NIM
+
+The first-run wizard lets you choose your preferred provider and sets the appropriate default model for that provider.
 
 ---
 
 ## How to Switch Models
 
-### Option 1: Switch inside Vega session
+### Option 1: Interactive picker (`/switch`)
 
-Type `/model` to see the interactive model picker:
-
-```
-You: /model
-
-Available Models:
-──────────────────────────────────────────────────
-  [1] gemini-2.5-pro          Google    ← active
-  [2] gemini-2.0-flash        Google
-  [3] gpt-4o                  OpenAI
-  [4] gpt-4o-mini             OpenAI
-  [5] claude-3-5-sonnet       Anthropic
-  [6] claude-3-haiku          Anthropic
-  [7] llama-3.3-70b-versatile Groq
-  [8] deepseek-chat           DeepSeek
-  [9] mistral-large-latest    Mistral
-──────────────────────────────────────────────────
-Enter number or model name:
-```
-
-### Option 2: Switch inline by name
+The easiest way — shows the 5 primary curated models:
 
 ```
-You: /model gpt-4o
-✓ Switched to gpt-4o
+  ✦ Switch Active Model
 
-You: /model deepseek-coder
-✓ Switched to deepseek-coder
+    1.   Llama 3.1 405B (NVIDIA) (meta/llama-3.1-405b-instruct)
+    2.   Gemini 2.0 Flash (Google) (gemini-2.0-flash)
+    3. ★ Llama 3.3 70B (Groq) (llama-3.3-70b-versatile)        ← active
+    4.   DeepSeek-V3 (DeepSeek) (deepseek-chat)
+    5.   Kimi K2.6 (NVIDIA) (moonshotai/kimi-k2-instruct)
+
+  Choose a model [1-5]:
 ```
 
-### Option 3: Start Vega with a specific model
+### Option 2: Set model by ID (`/model`)
 
 ```bash
-vega --model claude-3-5-sonnet
+# View current model
+/model
+
+# Set a specific model
+/model deepseek-chat
+/model gemini-2.0-flash
+/model moonshotai/kimi-k2-instruct
+```
+
+### Option 3: Switch provider (`/provider`)
+
+Switches to a provider and automatically uses that provider's default model:
+
+```bash
+/provider google     # → switches to gemini-2.0-flash
+/provider groq       # → switches to llama-3.3-70b-versatile
+/provider deepseek   # → switches to deepseek-chat
+/provider nvidia     # → switches to meta/llama-3.1-405b-instruct
+```
+
+### Option 4: Start Vega with a specific model
+
+```bash
+vega --model deepseek-chat
+vega --model gemini-2.0-flash --provider google
+```
+
+### Option 5: List all models
+
+```bash
+# Inside Vega
+/models
+
+# Or as a shell command
+vega models
+
+# Filter by provider
+vega models nvidia
+vega models groq
 ```
 
 ---
 
 ## Which Model Should I Use?
 
-### For most users — `gemini-2.5-pro`
+### For most users — `meta/llama-3.1-405b-instruct` (NVIDIA, Free)
 
-The default choice. Excellent code quality, huge context window, and available for free via Google AI Studio. Use this unless you have a specific reason to switch.
+The Vega default. Excellent code quality, 128K context, and available for free on NVIDIA NIM.
 
-### For React / Frontend apps — `gpt-4o`
+### For code generation & debugging — `moonshotai/kimi-k2-instruct` (NVIDIA, Free)
 
-OpenAI's GPT-4o has been trained heavily on JavaScript and React patterns. It produces clean, idiomatic React code with excellent component structure.
+Kimi K2 is Vega's CodeAgent and DebugAgent choice. Outstanding at generating multi-file projects and complex debugging scenarios.
 
-### For Backend / APIs / Security — `claude-3-5-sonnet`
+### For maximum speed — `meta-llama/llama-4-scout-17b-16e-instruct` (Groq, Free)
 
-Claude is known for producing safe, secure backend code. It excels at edge case handling, input validation, and clear error messages.
+Groq's hardware provides dramatically faster inference — responses in under 1 second. Use this when you want near-instant output for Q&A and explanations.
 
-### For maximum speed — `llama-3.3-70b-versatile` (Groq)
+### For architecture & planning — `deepseek-chat` (DeepSeek, Cheap)
 
-Groq's hardware provides dramatically faster inference — responses in under 1 second. Use this when you want near-instant output for simpler tasks.
+DeepSeek-V3 excels at structured thinking, system design, and code review. Very cost-effective at approximately $0.27/million input tokens.
 
-### For code-specific tasks — `deepseek-coder`
+### For long context — `gemini-1.5-pro` (Google, Free)
 
-DeepSeek Coder is purpose-built for code generation and performs exceptionally well on algorithmic problems, data structures, and multi-language code tasks.
-
-### For very long context — `gemini-1.5-pro`
-
-If you're working with a large existing codebase, need to paste in many files, or have a very complex project that requires remembering lots of context, Gemini 1.5 Pro's 2M token window is unmatched.
+2M token context window — use this when working with large codebases, multiple files, or very long documents.
 
 ---
 
-## Model Availability by Agent
+## Model Persistence
 
-Each agent has a default model, but you can use any model with any agent:
+When you switch models, Vega saves the selection to `~/.vega/config.json` so it persists across sessions:
 
-| Agent | Default Model | Why |
-|-------|---------------|-----|
-| 🌐 WebAgent | `gemini-2.5-pro` | Great HTML/CSS/JS quality |
-| 📱 AppAgent | `gpt-4o` | Best React/Vue output |
-| 🐍 CodeAgent | `gemini-2.5-pro` | Excellent Python |
-| ⚙️ BackendAgent | `claude-3-5-sonnet` | Secure, robust APIs |
-| 📊 DataAgent | `gemini-2.5-pro` | Strong with Pandas/data |
-| 🤖 GeneralAgent | `gemini-2.0-flash` | Fast for conversational |
-
----
-
-## Adding API Keys for Models
-
-Models require an API key from the corresponding provider. See [API Keys →](/cli/api-keys) for step-by-step instructions to get free keys for every provider.
-
-```
-You: /connect
-
-Select a provider to connect:
-  1. Google Gemini   (for gemini-* models)
-  2. OpenAI          (for gpt-* models)
-  3. Anthropic       (for claude-* models)
-  4. Groq            (for llama-*, mixtral-* models)
-  5. DeepSeek        (for deepseek-* models)
-  6. NVIDIA NIM      (for nvidia/* models)
-  7. Mistral         (for mistral-* models)
+```bash
+/config model
+# → model = moonshotai/kimi-k2-instruct
 ```
 
----
+To reset to the default:
 
-## Checking Your Current Model
-
-At any time, check which model is active:
-
-```
-You: /status
-
-Session Status:
-─────────────────────────────────────
-Model:    gpt-4o (OpenAI)
-Agent:    AppAgent 📱
-Keys:     Gemini ✓  OpenAI ✓  Groq ✓
-─────────────────────────────────────
-```
-
-The active model is also always shown in the header bar of the Vega prompt:
-
-```
-Model: gpt-4o  Agent: app
-──────────────────────────────────────────
-You:
+```bash
+/reset
 ```

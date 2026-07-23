@@ -16,27 +16,46 @@ These are run directly from your terminal:
 | Command | Description |
 |---------|-------------|
 | `vega` | Start the interactive Vega session |
-| `vega --version` | Show the installed Vega version |
-| `vega --help` | Show help and available flags |
-| `vega --model <name>` | Start with a specific model pre-selected |
-| `vega --agent <name>` | Start with a specific agent pre-selected |
-| `vega --no-color` | Disable colored terminal output |
-| `vega --debug` | Enable verbose debug logging |
+| `vega "prompt"` | One-shot mode — run a single prompt and exit |
+| `vega --version` / `-v` | Show the installed Vega version |
+| `vega --help` / `-h` | Show help table and available flags |
+| `vega --model <id>` / `-m` | Start with a specific model pre-selected |
+| `vega --provider <name>` / `-p` | Start with a specific provider |
+| `vega --no-logo` | Skip the ASCII logo on startup |
+| `vega build <goal>` | Build a project without entering interactive mode |
+| `vega models [provider]` | List all available models (optionally filter by provider) |
+| `vega config [key] [value]` | View or set a config value |
+| `vega version` | Print version banner |
 
 ### Examples
 
 ```bash
-# Start normally
+# Start normally (shows ASCII logo + enters interactive session)
 vega
 
+# One-shot: ask a question and exit
+vega "What is a closure in JavaScript?"
+
 # Start with a specific model
-vega --model gpt-4o
+vega --model deepseek-chat
 
-# Start with the web agent forced
-vega --agent web
+# Start with a specific provider (uses that provider's default model)
+vega --provider groq
 
-# Debug mode (useful for reporting issues)
-vega --debug
+# Build a project without interactive mode
+vega build "FastAPI todo app with SQLite" --out ./my-todo-api
+
+# List all available models
+vega models
+
+# List models for a specific provider
+vega models nvidia
+
+# View current config
+vega config
+
+# Set a config value
+vega config temperature 0.9
 ```
 
 ---
@@ -45,195 +64,256 @@ vega --debug
 
 Once inside the Vega interactive shell, you can use these slash commands at any prompt:
 
+### `/help`  `/h`
+
+Show the full command reference table.
+
+```
+/help
+```
+
+---
+
 ### `/connect`
 
-Add or update an API key for a provider.
+Launch the provider wizard to add or update an API key. Also hot-swaps the active provider after connecting.
 
 ```
-You: /connect
+/connect
 ```
 
-Vega will display an interactive menu:
-
 ```
-Select a provider to connect:
-  1. Google Gemini
-  2. OpenAI (GPT-4o)
-  3. Anthropic (Claude)
-  4. Groq (LLaMA / Mistral)
-  5. DeepSeek
-  6. NVIDIA NIM
+  Choose a provider:
 
-Enter number: 1
-Paste your API key: ****************************
+    1. NVIDIA NIM (free tier)  →  https://build.nvidia.com
+    2. Google Gemini           →  https://aistudio.google.com
+    3. Groq (free tier)        →  https://console.groq.com
+    4. DeepSeek                →  https://platform.deepseek.com
+    5. Skip for now (set keys later with /connect)
 
-✓ Gemini API key saved.
+  Choice [1-5]: 1
+  Paste your NVIDIA NIM API key: nvapi-...
+  ✔  Connected to NVIDIA NIM (free tier)!
 ```
 
 ---
 
-### `/model`
+### `/switch`  `/s`
 
-Switch the AI model mid-conversation.
-
-```
-You: /model
-```
+Interactively pick from the 5 primary curated models across all providers.
 
 ```
-Available models:
-  1. gemini-2.5-pro          [Google]     ← current
-  2. gemini-2.0-flash
-  3. gpt-4o                  [OpenAI]
-  4. gpt-4o-mini
-  5. claude-3-5-sonnet       [Anthropic]
-  6. llama-3.3-70b-versatile [Groq]
-  7. deepseek-chat            [DeepSeek]
-  8. mistral-large-latest     [Mistral]
-
-Enter number or model name: 3
-
-✓ Switched to gpt-4o
+/switch
 ```
 
-You can also switch inline:
-
 ```
-You: /model gpt-4o
-✓ Switched to gpt-4o
+  ✦ Switch Active Model
+
+    1.   Llama 3.1 405B (NVIDIA) (meta/llama-3.1-405b-instruct)
+    2.   Gemini 2.0 Flash (Google) (gemini-2.0-flash)
+    3. ★ Llama 3.3 70B (Groq) (llama-3.3-70b-versatile)
+    4.   DeepSeek-V3 (DeepSeek) (deepseek-chat)
+    5.   Kimi K2.6 (NVIDIA) (moonshotai/kimi-k2-instruct)
+
+  Choose a model [1-5]: 5
+  ✔  Switched active model to: Kimi K2.6 (NVIDIA)
 ```
 
 ---
 
-### `/agent`
+### `/model [id]`  `/m [id]`
 
-Manually override the automatic agent routing.
+View or set the active model by ID. If no ID is given, shows the current model.
 
 ```
-You: /agent web
-✓ Agent locked to: WebAgent 🌐
-
-You: /agent auto
-✓ Agent set to: auto-routing
+/model                          # Shows current model
+/model deepseek-chat            # Switches to DeepSeek-V3
+/model gemini-2.0-flash         # Switches to Gemini Flash
+/model moonshotai/kimi-k2-instruct
 ```
 
-Available agent names: `web`, `app`, `code`, `backend`, `data`, `general`
+---
+
+### `/models`
+
+List all models in the registry with their context windows and notes. Shows a ★ next to the active model.
+
+```
+/models
+```
+
+---
+
+### `/provider [name]`  `/p [name]`
+
+View the active provider or switch to another one. Switches to that provider's default model automatically.
+
+```
+/provider              # Shows current provider
+/provider nvidia       # Switches to NVIDIA (default: llama-3.1-405b-instruct)
+/provider google       # Switches to Google (default: gemini-2.0-flash)
+/provider groq         # Switches to Groq (default: llama-3.3-70b-versatile)
+/provider deepseek     # Switches to DeepSeek (default: deepseek-chat)
+```
 
 ---
 
 ### `/agents`
 
-Display all available agents and their descriptions.
+Display the full agent roster with icons, triggers, and descriptions.
 
 ```
-You: /agents
-
-Available Agents:
-─────────────────────────────────────────────────
-🌐  WebAgent     — HTML, CSS, JS, landing pages, portfolios
-📱  AppAgent     — React, Vue, mobile-style app UIs
-🐍  CodeAgent    — Python scripts, algorithms, utilities
-⚙️  BackendAgent — REST APIs, Node.js, Flask, databases
-📊  DataAgent    — data analysis, CSV processing, charts
-🤖  GeneralAgent — catch-all: questions, planning, writing
-─────────────────────────────────────────────────
+/agents
 ```
 
 ---
 
-### `/clear`
+### `/build <goal>`
 
-Clear the terminal screen and reset the conversation history for the current session.
+Launch project builder mode directly. If no goal is provided, Vega will prompt you for one.
 
 ```
-You: /clear
-✓ Screen cleared. Conversation history reset.
+/build a weather dashboard in React
+/build a Python CLI tool for bulk file renaming
+/build a REST API with FastAPI and PostgreSQL
 ```
 
 ---
 
-### `/save`
+### `/agent <goal>`
 
-Save the current conversation and all generated code to a session log file.
+Run the autonomous ReAct agent towards a goal. The agent plans, calls tools (write_file, read_file, list_files, run_shell), and iterates until complete.
 
 ```
-You: /save
-✓ Session saved to: ~/.vega/sessions/session-2025-01-15-14-32.json
+/agent Build a Python web scraper for Hacker News headlines
+/agent Create a Makefile with common dev tasks
+```
+
+---
+
+### `/clear`  `/cls`
+
+Clear the terminal screen and reset the conversation history (keeps the system prompt).
+
+```
+/clear
 ```
 
 ---
 
 ### `/history`
 
-Show the last 10 messages in the current session.
+Show the last 10 user prompts from saved sessions.
 
 ```
-You: /history
-
-Session History (last 10 messages):
-─────────────────────────────────────
-[1] You: Build a landing page for FlowBoard...
-[2] Vega: 🌐 WebAgent — Generated 3 files...
-[3] You: Add a pricing section
-[4] Vega: 🌐 WebAgent — Updated index.html...
-─────────────────────────────────────
+/history
 ```
 
 ---
 
-### `/status`
+### `/export [path]`
 
-Show the current session status — active model, agent, and API key info.
+Export the current session to a Markdown file. If no path is given, auto-generates a filename.
 
 ```
-You: /status
-
-Session Status:
-─────────────────────────────────────
-Model:    gemini-2.5-pro (Google)
-Agent:    auto-routing
-Key:      Gemini ✓  OpenAI ✓  Groq ✓
-Messages: 12 in session
-─────────────────────────────────────
+/export                          # → vega_export_20260622_143022.md
+/export ./my-session.md
 ```
 
 ---
 
-### `/help`
+### `/settings`
 
-Display all available slash commands with descriptions.
+Show all current configuration values in a formatted table.
 
 ```
-You: /help
+/settings
 ```
 
 ---
 
-### `exit`
+### `/config [key] [value]`  `/cfg [key] [value]`
 
-Quit the Vega session gracefully.
+View or set a configuration key. Without arguments, shows all settings.
 
 ```
-You: exit
-Goodbye. Code at the speed of stars ✦
+/config                          # Show all config
+/config temperature              # Show one key
+/config temperature 0.9          # Set a key
+/config max_tokens 8192
+/config show_token_count false
 ```
 
-You can also press `Ctrl+C` or `Ctrl+D` to exit.
+---
+
+### `/system [prompt]`  `/sys [prompt]`
+
+View or set the system prompt. Without a prompt, shows the current system prompt.
+
+```
+/system                          # Show current system prompt
+/system You are a concise Python expert. Only use Python 3.12+.
+```
+
+---
+
+### `/tokens`
+
+Show token usage statistics for the current session.
+
+```
+/tokens
+# → Turns: 5 | Output tokens: ~2,450 | Context messages: 11
+```
+
+---
+
+### `/reset`
+
+Reset all configuration to factory defaults (overwrites `~/.vega/config.json`).
+
+```
+/reset
+```
+
+---
+
+### `/version`
+
+Print the installed Vega version, tagline, and GitHub URL.
+
+```
+/version
+```
+
+---
+
+### `/exit`  `/quit`  `/q`
+
+Save the session and exit Vega cleanly.
+
+```
+/exit
+```
 
 ---
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `↑` / `↓` | Navigate prompt history |
-| `Ctrl+C` | Cancel current generation or exit |
-| `Ctrl+D` | Exit session |
-| `Ctrl+L` | Clear screen (without resetting history) |
-| `Tab` | Autocomplete slash commands |
+| Shortcut | Behavior |
+|----------|----------|
+| `Ctrl-D` (EOF) | Save session and exit cleanly |
+| `Ctrl-C` | Interrupt current response (mid-stream) or get hint to use `/exit` |
 
 ---
 
-<Note>
-  Slash commands are only available inside the interactive Vega session. They won't work in a standard shell.
-</Note>
+## One-Shot Mode
+
+Run a single prompt from the shell without entering interactive mode:
+
+```bash
+vega "Explain the difference between async and multithreading in Python"
+vega "Write a bash script to backup all .py files in the current directory"
+```
+
+The response streams to the terminal and Vega exits after it completes.

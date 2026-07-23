@@ -448,6 +448,8 @@ def _print_goodbye() -> None:
     from vega.display import show_goodbye
     show_goodbye()
 
+# NOTE: The interactive REPL loop (run_chat_loop) lives in vega/chat.py.
+
 
 # ─────────────────────────────────────────────
 #  Interactive REPL loop
@@ -551,20 +553,8 @@ def _print_agents_table() -> None:
 
 
 # ─────────────────────────────────────────────
-#  Goodbye
+#  (Goodbye is handled by _print_goodbye above)
 # ─────────────────────────────────────────────
-
-def _print_goodbye() -> None:
-    console.print()
-    console.print(
-        Text.assemble(
-            ("  ✦ ", "bold bright_cyan"),
-            ("Thanks for using ", "cyan"),
-            ("Vega", "bold bright_cyan"),
-            (" — code at the speed of stars. ", "cyan"),
-            ("✦\n", "bold bright_cyan"),
-        )
-    )
 
 
 # ─────────────────────────────────────────────
