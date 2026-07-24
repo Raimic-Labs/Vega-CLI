@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Syne, JetBrains_Mono } from 'next/font/google'
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
+import AppLayoutWrapper from '@/components/layout/AppLayoutWrapper'
 import './globals.css'
 
 /* ─────────────────────────────────────────────
@@ -85,14 +84,7 @@ export default function RootLayout({
       <body>
         {/* Noise texture overlay for depth */}
         <div className="noise-overlay" aria-hidden="true" />
-
-        <Navbar />
-
-        <main id="main-content" tabIndex={-1}>
-          {children}
-        </main>
-
-        <Footer />
+        <AppLayoutWrapper>{children}</AppLayoutWrapper>
       </body>
     </html>
   )
