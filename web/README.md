@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✦ Vega Web — Next.js Workspace
 
-## Getting Started
+The web workspace and interactive AI studio for **Vega CLI**, built by Raimic Labs with Next.js 14, TypeScript, Framer Motion, and a Dark Cosmic UI theme.
 
-First, run the development server:
+---
+
+## 🌟 Features
+
+- **Cosmic Dark Theme**: Built with custom design tokens (`#00FFFF` Cyan, `#0A0A0F` Dark, `#6C63FF` Purple), aurora background mesh, and custom scrollbars.
+- **Vega AI Workspace (`/chat`)**: Multi-agent chat interface with live streaming, auto-agent detection (`CodeAgent`, `DebugAgent`, `PlannerAgent`, `ReviewAgent`, `ImageAgent`, `FastAgent`), and syntax code blocks with copy support.
+- **Project Builder GUI (`/build`)**: Split-view workspace for generating full projects, viewing code, inspecting live iframe previews, and exporting as `.zip`.
+- **AI Image Studio (`/images`)**: Visual asset generator powered by Google Gemini with customizable aspect ratios (1:1, 16:9, 9:16) and image gallery downloads.
+- **Pricing & FAQs (`/pricing`)**: Free, Pro, and Team tier cards with yearly billing discount calculator and accordion FAQs.
+- **Settings & API Keys (`/settings`)**: Secure API key management for NVIDIA NIM, Google Gemini, Groq, and DeepSeek credentials with connection testing.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔑 Environment Variables
 
-## Learn More
+Create a `.env.local` file in the `web` root directory:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+# NVIDIA NIM API Key (Default Provider for Kimi K2.6)
+NVIDIA_API_KEY=nvapi-your-key-here
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Google Gemini API Key (ImageAgent & Multimodal)
+GOOGLE_API_KEY=AIzaSyYourKeyHere
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Groq API Key (FastAgent Llama 3.3)
+GROQ_API_KEY=gsk_your_key_here
 
-## Deploy on Vercel
+# DeepSeek API Key (PlannerAgent & ReviewAgent)
+DEEPSEEK_API_KEY=sk-your-key-here
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+*Note: Users can also input their API keys directly on the `/settings` page or in the CLI via `/connect`.*
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## ⚡ Deploy to Vercel
+
+Vega Web is fully optimized for **Vercel** with Next.js App Router and Edge API Routes:
+
+1. Push your repository to GitHub.
+2. Import the project in Vercel.
+3. Set Root Directory to `web`.
+4. Add environment variables (`NVIDIA_API_KEY`, etc.).
+5. Click **Deploy**.
+
+---
+
+Built with ✦ by **Raimic Labs**.
