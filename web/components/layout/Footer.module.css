@@ -1,0 +1,303 @@
+/* ─────────────────────────────────────────────
+   FOOTER — CSS Module
+───────────────────────────────────────────── */
+
+.footer {
+  position: relative;
+  background: var(--color-black-soft);
+  border-top: 1px solid var(--color-black-border);
+  padding-top: 1px; /* top glow sits above the border */
+}
+
+/* ── Top Glow Line ── */
+.topGlow {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(108, 99, 255, 0.5) 25%,
+    rgba(0, 255, 255, 0.8) 50%,
+    rgba(108, 99, 255, 0.5) 75%,
+    transparent 100%
+  );
+  filter: blur(0.5px);
+}
+
+/* ── Inner grid ── */
+.inner {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 64px 24px 48px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 64px;
+  align-items: start;
+}
+
+/* ─────────────────────────────────────────────
+   BRAND COLUMN
+───────────────────────────────────────────── */
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.logoMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-cyan-ghost);
+  border: 1px solid rgba(0, 255, 255, 0.18);
+  border-radius: 9px;
+  color: var(--color-cyan);
+  font-size: 17px;
+  font-family: var(--font-mono);
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.15);
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.logoLink:hover .logoMark {
+  background: rgba(0, 255, 255, 0.13);
+  box-shadow: 0 0 22px rgba(0, 255, 255, 0.30);
+}
+
+.logoText {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--color-white);
+}
+
+.tagline {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-white-muted);
+  line-height: 1.5;
+}
+
+.byLine {
+  font-size: 13px;
+  color: var(--color-white-dim);
+}
+
+.raimicLink {
+  color: var(--color-cyan);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.raimicLink:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* ─────────────────────────────────────────────
+   INSTALL BLOCK
+───────────────────────────────────────────── */
+.installBlock {
+  margin-top: 8px;
+  background: var(--color-black);
+  border: 1px solid rgba(0, 255, 255, 0.14);
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.installHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.installDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0.9;
+}
+
+.installLabel {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--color-white-dim);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.installBody {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+
+.installBody:first-of-type {
+  padding-top: 14px;
+}
+
+.installBody:last-of-type {
+  padding-bottom: 14px;
+}
+
+.installPrompt {
+  color: var(--color-purple);
+  font-size: 14px;
+  user-select: none;
+}
+
+.installCmd {
+  color: var(--color-cyan);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* ─────────────────────────────────────────────
+   LINK COLUMNS
+───────────────────────────────────────────── */
+.linkColumns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.linkGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.linkGroupHeading {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-white-dim);
+}
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footerLink {
+  font-size: 14px;
+  color: var(--color-white-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footerLink:hover {
+  color: var(--color-white);
+}
+
+/* ─────────────────────────────────────────────
+   BOTTOM BAR
+───────────────────────────────────────────── */
+.bottomBar {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.copyright {
+  font-size: 13px;
+  color: var(--color-white-dim);
+}
+
+.bottomLinks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bottomLink {
+  font-size: 13px;
+  color: var(--color-white-dim);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.bottomLink:hover {
+  color: var(--color-white-muted);
+}
+
+.bottomDivider {
+  color: rgba(255, 255, 255, 0.15);
+  user-select: none;
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding-block: 48px;
+  }
+
+  .linkColumns {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .inner {
+    padding-inline: 16px;
+  }
+
+  .linkColumns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bottomBar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-inline: 16px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .linkColumns {
+    grid-template-columns: 1fr;
+  }
+}

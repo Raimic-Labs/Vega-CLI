@@ -1,40 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* ─────────────────────────────────────────────
+   CSS DESIGN TOKENS
+───────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colors */
+  --color-black:        #0A0A0F;
+  --color-black-soft:   #0D0D14;
+  --color-black-border: #16161F;
+  --color-surface:      #111118;
+  --color-surface-2:    #1A1A24;
+  --color-cyan:         #00FFFF;
+  --color-cyan-dim:     #00CCCC;
+  --color-cyan-ghost:   rgba(0, 255, 255, 0.08);
+  --color-cyan-glow:    rgba(0, 255, 255, 0.25);
+  --color-cyan-glow-lg: rgba(0, 255, 255, 0.12);
+  --color-purple:       #6C63FF;
+  --color-purple-dim:   #5A52E0;
+  --color-purple-ghost: rgba(108, 99, 255, 0.10);
+  --color-purple-glow:  rgba(108, 99, 255, 0.30);
+  --color-white:        #FFFFFF;
+  --color-white-muted:  #A0A0B8;
+  --color-white-dim:    #6A6A88;
+
+  /* Typography */
+  --font-sans:  'Syne', system-ui, -apple-system, sans-serif;
+  --font-mono:  'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Spacing scale */
+  --space-1:    4px;
+  --space-2:    8px;
+  --space-3:    12px;
+  --space-4:    16px;
+  --space-5:    20px;
+  --space-6:    24px;
+  --space-8:    32px;
+  --space-10:   40px;
+  --space-12:   48px;
+  --space-16:   64px;
+  --space-20:   80px;
+  --space-24:   96px;
+
+  /* Radii */
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-xl:  32px;
+  --radius-full: 9999px;
+
+  /* Borders */
+  --border-subtle:    1px solid rgba(255, 255, 255, 0.06);
+  --border-cyan:      1px solid rgba(0, 255, 255, 0.20);
+  --border-purple:    1px solid rgba(108, 99, 255, 0.20);
+
+  /* Shadows / Glows */
+  --shadow-cyan-sm:   0 0 12px rgba(0, 255, 255, 0.20);
+  --shadow-cyan-md:   0 0 30px rgba(0, 255, 255, 0.15), 0 0 60px rgba(0, 255, 255, 0.05);
+  --shadow-purple-sm: 0 0 12px rgba(108, 99, 255, 0.25);
+  --shadow-card:      0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255,255,255,0.04) inset;
+
+  /* Transitions */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:    cubic-bezier(0.4, 0, 1, 1);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Glassmorphism */
+  --glass-bg:     rgba(10, 10, 15, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur:   saturate(180%) blur(20px);
+
+  /* Z-index scale */
+  --z-base:    0;
+  --z-raised:  10;
+  --z-nav:     100;
+  --z-modal:   1000;
+  --z-overlay: 9999;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─────────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-black);
+  color: var(--color-white);
+  min-height: 100dvh;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────────
+   AURORA ANIMATED BACKGROUND
+───────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: var(--color-black);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  /* Aurora layers */
+  background:
+    /* Orb 1 — cyan top-left */
+    radial-gradient(
+      ellipse 80% 50% at 10% -10%,
+      rgba(0, 255, 255, 0.09) 0%,
+      transparent 65%
+    ),
+    /* Orb 2 — purple center-right */
+    radial-gradient(
+      ellipse 60% 70% at 90% 30%,
+      rgba(108, 99, 255, 0.10) 0%,
+      transparent 65%
+    ),
+    /* Orb 3 — subtle cyan bottom */
+    radial-gradient(
+      ellipse 70% 40% at 50% 110%,
+      rgba(0, 200, 255, 0.07) 0%,
+      transparent 60%
+    ),
+    /* Orb 4 — deep purple top-right */
+    radial-gradient(
+      ellipse 50% 50% at 85% -5%,
+      rgba(80, 40, 180, 0.08) 0%,
+      transparent 55%
+    );
+
+  animation: aurora-drift 24s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift {
+  0%   { opacity: 1; transform: scale(1) translateY(0px); }
+  33%  { transform: scale(1.03) translateY(-12px) translateX(8px); }
+  66%  { transform: scale(0.98) translateY(10px) translateX(-6px); }
+  100% { opacity: 0.85; transform: scale(1.02) translateY(-6px); }
+}
+
+/* Noise texture overlay for depth */
+body .noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* ─────────────────────────────────────────────
+   CUSTOM SCROLLBAR
+───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-black-soft);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.20);
+  border-radius: var(--radius-full);
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.45);
+}
+
+/* Firefox */
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 255, 0.20) var(--color-black-soft);
+}
+
+@media (prefers-contrast: more) {
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.65);
+  }
+  * {
+    scrollbar-color: rgba(0, 255, 255, 0.65) #111;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   TYPOGRAPHY
+───────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+code, kbd, pre, samp {
+  font-family: var(--font-mono);
 }
 
 a {
@@ -42,8 +225,78 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* ─────────────────────────────────────────────
+   SELECTION
+───────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 255, 255, 0.20);
+  color: var(--color-white);
+}
+
+/* ─────────────────────────────────────────────
+   FOCUS RING
+───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─────────────────────────────────────────────
+   UTILITY CLASSES
+───────────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .container { padding-inline: var(--space-4); }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Glow text utility */
+.text-glow-cyan {
+  color: var(--color-cyan);
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.50);
+}
+
+.text-glow-purple {
+  color: var(--color-purple);
+  text-shadow: 0 0 20px rgba(108, 99, 255, 0.50);
+}
+
+/* ─────────────────────────────────────────────
+   SCROLL ENTRY ANIMATIONS  (Progressive)
+   Only for browsers with support. Falls back
+   silently for Firefox and older browsers.
+───────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    @keyframes fade-up-in {
+      from {
+        opacity: 0;
+        translate: 0 24px;
+      }
+    }
+
+    .scroll-reveal {
+      animation: fade-up-in 0.6s var(--ease-out) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
   }
 }
