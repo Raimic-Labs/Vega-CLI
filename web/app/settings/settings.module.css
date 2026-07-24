@@ -1,0 +1,191 @@
+/* ─────────────────────────────────────────────
+   SETTINGS — CSS MODULE
+───────────────────────────────────────────── */
+
+.container {
+  min-height: 100dvh;
+  background: var(--color-black);
+  color: var(--color-white);
+  padding: 120px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.inner {
+  max-width: 850px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--color-white);
+}
+
+.desc {
+  font-size: 15px;
+  color: var(--color-white-muted);
+}
+
+.section {
+  background: #111118;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.providerGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.providerCard {
+  background: #0A0A0F;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.providerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.providerName {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusBadge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.statusConnected {
+  background: rgba(40, 200, 64, 0.12);
+  border: 1px solid rgba(40, 200, 64, 0.25);
+  color: #28C840;
+}
+
+.statusMissing {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-white-dim);
+}
+
+.keyInputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.keyInput {
+  flex: 1;
+  background: #111118;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+}
+
+.keyInput:focus {
+  border-color: var(--color-cyan);
+}
+
+.testBtn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.25);
+  color: var(--color-cyan);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.testBtn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  border-color: rgba(0, 255, 255, 0.4);
+}
+
+.saveNotice {
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(40, 200, 64, 0.12);
+  border: 1px solid rgba(40, 200, 64, 0.25);
+  color: #28C840;
+  font-size: 13px;
+  text-align: center;
+}
+
+.selectInput {
+  width: 100%;
+  padding: 12px;
+  background: #0A0A0F;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--color-white);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+.saveBtn {
+  height: 48px;
+  border-radius: 10px;
+  background: var(--color-cyan);
+  color: var(--color-black);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  transition: all 0.15s;
+}
+
+.saveBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}

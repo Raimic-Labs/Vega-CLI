@@ -6,9 +6,13 @@ import Footer from '@/components/layout/Footer'
 
 export default function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const isChatPage = pathname === '/chat' || pathname?.startsWith('/chat/')
+  const isStandaloneWorkspace =
+    pathname === '/chat' ||
+    pathname?.startsWith('/chat/') ||
+    pathname === '/build' ||
+    pathname?.startsWith('/build/')
 
-  if (isChatPage) {
+  if (isStandaloneWorkspace) {
     return <main id="main-content">{children}</main>
   }
 
