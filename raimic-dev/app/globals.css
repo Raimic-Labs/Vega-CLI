@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-black: #0A0A0F;
+    --bg-surface: #111118;
+    --bg-surface-soft: #1A1A24;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --color-cyan: #00FFFF;
+    --color-purple: #6C63FF;
+    --text-white: #FFFFFF;
+    --text-muted: #A0A0B8;
+    --text-dim: #6A6A88;
+  }
+
+  body {
+    background-color: var(--bg-black);
+    color: var(--text-white);
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.4);
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Shimmer Keyframe */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
