@@ -10,6 +10,10 @@ providers/deepseek.py
 providers/google.py
 providers/groq.py
 providers/nvidia.py
+tests/test_agents.py
+tests/test_builder.py
+tests/test_router.py
+tests/test_settings.py
 tools/__init__.py
 tools/file_writer.py
 tools/zip_export.py
